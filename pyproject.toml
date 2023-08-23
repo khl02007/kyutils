@@ -1,0 +1,44 @@
+[project]
+name = "kyutils"
+version = "0.0.1"
+authors = [
+  { name="Kyu Hyun Lee", email="kyuhyun9056@gmail.com" },
+]
+description = "Useful utils"
+readme = "README.md"
+requires-python = ">=3.9,<4.0"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: OS Independent"
+]
+
+dependencies = [
+    "numpy",
+    "spikeinterface",
+    "probeinterface>=0.2.16",
+]
+
+[build-system]
+requires = ["setuptools>=62.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["kyutils"]
+namespaces = False
+
+[tool.black]
+line-length = 120
+
+[project.urls]
+repository = "https://github.com/khl02007/kyutils"
+
+filterwarnings =[
+    'ignore:.*distutils Version classes are deprecated.*:DeprecationWarning',
+    'ignore:.*the imp module is deprecated in favour of importlib.*:DeprecationWarning',
+]
