@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<Configuration>
+ <GlobalConfiguration filePath="" realtimeMode="0" saveDisplayedChanOnly="1" fileChunkSize="-1" filePrefix=""/>
+ <BenchmarkConfiguration/>
+ <NetworkConfiguration networkType="qsocket"/>
+ <HardwareConfiguration numChannels="128" samplingRate="30000" lfpSubsamplingInterval="20" useIntrinsics="1">
+  <Device available="1" name="Controller_DIO" packetOrderPreference="10" numBytes="1">
+   <Channel dataType="digital" startByte="0" id="Controller_Din1" input="1" bit="0"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din2" input="1" bit="1"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din3" input="1" bit="2"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din4" input="1" bit="3"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din5" input="1" bit="4"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din6" input="1" bit="5"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din7" input="1" bit="6"/>
+   <Channel dataType="digital" startByte="0" id="Controller_Din8" input="1" bit="7"/>
+  </Device>
+  <Device available="1" name="ECU" packetOrderPreference="20" numBytes="32">
+   <Channel dataType="digital" startByte="0" id="ECU_Din1" input="1" bit="0"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din2" input="1" bit="1"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din3" input="1" bit="2"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din4" input="1" bit="3"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din5" input="1" bit="4"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din6" input="1" bit="5"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din7" input="1" bit="6"/>
+   <Channel dataType="digital" startByte="0" id="ECU_Din8" input="1" bit="7"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din9" input="1" bit="0"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din10" input="1" bit="1"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din11" input="1" bit="2"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din12" input="1" bit="3"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din13" input="1" bit="4"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din14" input="1" bit="5"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din15" input="1" bit="6"/>
+   <Channel dataType="digital" startByte="1" id="ECU_Din16" input="1" bit="7"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din17" input="1" bit="0"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din18" input="1" bit="1"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din19" input="1" bit="2"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din20" input="1" bit="3"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din21" input="1" bit="4"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din22" input="1" bit="5"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din23" input="1" bit="6"/>
+   <Channel dataType="digital" startByte="2" id="ECU_Din24" input="1" bit="7"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din25" input="1" bit="0"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din26" input="1" bit="1"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din27" input="1" bit="2"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din28" input="1" bit="3"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din29" input="1" bit="4"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din30" input="1" bit="5"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din31" input="1" bit="6"/>
+   <Channel dataType="digital" startByte="3" id="ECU_Din32" input="1" bit="7"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout1" input="0" bit="0"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout2" input="0" bit="1"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout3" input="0" bit="2"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout4" input="0" bit="3"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout5" input="0" bit="4"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout6" input="0" bit="5"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout7" input="0" bit="6"/>
+   <Channel dataType="digital" startByte="4" id="ECU_Dout8" input="0" bit="7"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout9" input="0" bit="0"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout10" input="0" bit="1"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout11" input="0" bit="2"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout12" input="0" bit="3"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout13" input="0" bit="4"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout14" input="0" bit="5"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout15" input="0" bit="6"/>
+   <Channel dataType="digital" startByte="5" id="ECU_Dout16" input="0" bit="7"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout17" input="0" bit="0"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout18" input="0" bit="1"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout19" input="0" bit="2"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout20" input="0" bit="3"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout21" input="0" bit="4"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout22" input="0" bit="5"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout23" input="0" bit="6"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout24" input="0" bit="7"/>
+   <Channel dataType="digital" startByte="6" id="ECU_Dout25" input="0" bit="0"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout26" input="0" bit="1"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout27" input="0" bit="2"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout28" input="0" bit="3"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout29" input="0" bit="4"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout30" input="0" bit="5"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout31" input="0" bit="6"/>
+   <Channel dataType="digital" startByte="7" id="ECU_Dout32" input="0" bit="7"/>
+   <Channel dataType="analog" startByte="8" id="ECU_Ain1" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="10" id="ECU_Ain2" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="12" id="ECU_Ain3" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="14" id="ECU_Ain4" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="16" id="ECU_Ain5" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="18" id="ECU_Ain6" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="20" id="ECU_Ain7" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="22" id="ECU_Ain8" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="24" id="ECU_Aout1" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="26" id="ECU_Aout2" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="28" id="ECU_Aout3" input="1" bit="0"/>
+   <Channel dataType="analog" startByte="30" id="ECU_Aout4" input="1" bit="0"/>
+  </Device>
+  <Device available="1" name="Multiplexed" packetOrderPreference="30" numBytes="8">
+   <Channel dataType="analog" startByte="2" id="Headstage_AccelX" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="3"/>
+   <Channel dataType="analog" startByte="4" id="Headstage_AccelY" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="3"/>
+   <Channel dataType="analog" startByte="6" id="Headstage_AccelZ" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="3"/>
+   <Channel dataType="analog" startByte="2" id="Headstage_GyroX" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="2"/>
+   <Channel dataType="analog" startByte="4" id="Headstage_GyroY" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="2"/>
+   <Channel dataType="analog" startByte="6" id="Headstage_GyroZ" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="2"/>
+   <Channel dataType="analog" startByte="2" id="Headstage_MagX" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="1"/>
+   <Channel dataType="analog" startByte="4" id="Headstage_MagY" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="1"/>
+   <Channel dataType="analog" startByte="6" id="Headstage_MagZ" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="1"/>
+   <Channel dataType="uint32" startByte="2" id="RFsync" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="0"/>
+   <Channel dataType="uint32" startByte="2" id="Headstage_Ack1" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="4"/>
+   <Channel dataType="uint32" startByte="4" id="Headstage_Ack2" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="4"/>
+   <Channel dataType="uint32" startByte="6" id="Headstage_Ack3" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="4"/>
+   <Channel dataType="analog" startByte="2" id="Controller_Ain1" input="1" bit="0" interleavedDataIDByte="0" interleavedDataIDBit="5"/>
+  </Device>
+  <Device available="1" name="SysClock" packetOrderPreference="10000" numBytes="8"/>
+ </HardwareConfiguration>
+ <ModuleConfiguration>
+  <SingleModuleConfiguration sendNetworkInfo="1" sendTrodesConfig="1" moduleName="cameraModule">
+   <Argument flag="-20" value="-ptpEnabled"/>
+  </SingleModuleConfiguration>
+  <SingleModuleConfiguration sendNetworkInfo="1" sendTrodesConfig="1" moduleName="stateScript"/>
+ </ModuleConfiguration>
+ <StreamDisplay horizontal="0" columns="4" pageBreaks="" backgroundColor="#000000" pages="1"/>
+ <AuxDisplayConfiguration>
+  <DispChannel id="ECU_Din1" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din2" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din3" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din4" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din5" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din6" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din7" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din8" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din9" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din10" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din11" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din12" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din13" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din14" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din15" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din16" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout1" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout2" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout3" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout4" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout5" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout6" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout7" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout8" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout9" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout10" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout11" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout12" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout13" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout14" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout15" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout16" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din17" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din18" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din19" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din20" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din21" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din22" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din23" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din24" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din25" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din26" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din27" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din28" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din29" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din30" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din31" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Din32" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout17" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout18" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout19" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout20" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout21" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout22" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout23" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout24" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout25" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout26" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout27" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout28" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout29" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout30" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout31" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Dout32" color="#aaaaaa" device="ECU" maxDisp="2" analyze="0"/>
+  <DispChannel id="ECU_Ain1" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain2" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain3" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain4" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain5" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain6" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain7" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Ain8" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Aout1" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Aout2" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Aout3" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+  <DispChannel id="ECU_Aout4" color="#008000" device="ECU" maxDisp="2000" analyze="0"/>
+ </AuxDisplayConfiguration>
+ <SpikeConfiguration categories="" chanPerChip="32" device="intan">
+ </SpikeConfiguration>
+</Configuration>
