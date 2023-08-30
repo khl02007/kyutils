@@ -4,88 +4,35 @@ import os
 import ntpath
 import copy
 
+valid_probe_types = [15, 20]
 
-DEFAULT_TRODE_CONF_FILE_NAME = 'livermore_trodesconf.trodesconf'
-valid_probe_types = [
-        '6_15',
-        '4_20',
-    ]
+def get_sibling_file(file_name):
+    file_directory = os.path.dirname(__file__)
+    return os.path.join(file_directory, file_name)
+    
 
-def read_input():
-    """Get user input from command line
+def get_spike_conf_roots(probe_types):
+    """_summary_
 
-    Returns
-    -------
-    dictionary
-        user input
-    """
-    valid_probes = ', '.join(valid_probe_types)
-
-    while True:
-        print("Probe count (between 1 - 8):", end=' ')
-        probe_count = input()
-
-        if not probe_count.isdigit():
-            print(f'Probe count must be integer. Your value is {probe_count}')
-            continue
-
-        probe_count = int(probe_count)
-
-        if probe_count < 1 or probe_count > 8:
-            print(f'Probe count must be between 1 and 8. Your value is {probe_count}')
-            continue
-
-        print(f'Probe Type (one of [{valid_probes}]):', end=' ')
-        probe_type = input()
-
-        if not probe_type in valid_probe_types:
-            probe_count_error = f'Probe type not valid. Your value is: {probe_type}'
-            probe_type_error = f'Valid options must be one of: {valid_probes}'
-            print(f'{probe_count_error}. {probe_type_error}')
-            continue
-
-        print('Enter file name or leave blank to use default name:', end=' ')
-        trode_conf_file_name = input()
-
-        file_name = trode_conf_file_name or DEFAULT_TRODE_CONF_FILE_NAME
-        trode_file = file_name if '.trodesconf' in file_name else f'{file_name}.trodesconf'
-            
-
-        print(f'Probe count: {probe_count}')
-        print(f'Probe type: {probe_type}')
-        print(f'Trodes conf file name: {file_name}')
-
-        break
-
-    return {
-        'probe_count': probe_count,
-        'probe_type': probe_type,
-        'trode_conf_file_name': file_name,
-    }
-
-def get_trodes_conf(size):
-    """Get trodes configuration
     Parameters
     ----------
-    size : str
-        size of the configuration
+    probe_types : list[int]
+        List of type of probe
 
     Returns
     -------
-    Element
-        configuration as an XML element
-    """
-    spike_conf_file = ''
-    match size:
-        case '4_20':
-            spike_conf_file = 'spike_config_4_20.xml'
-        case '6_15':
-            spike_conf_file = 'spike_config_6_15.xml'
-        case _:
-            raise ValueError(f'{size} is not supported')
-    spike_conf = ET.parse(spike_conf_file)
+    xmlElement
+        XML roots
+    """    
+    spike_conf_roots = []
+    
 
-    return spike_conf.getroot()
+    for probe_type in probe_types:
+        spike_conf_file = get_sibling_file(f'spike_config_{probe_type}.xml')
+        spike_conf = ET.parse(spike_conf_file)
+        spike_conf_roots.append(spike_conf.getroot())
+    
+    return spike_conf_roots
 
 def get_download_folder():
     """get download folder
@@ -114,29 +61,28 @@ def create_trode_conf_file(trodes_file_name, trodes_conf_xml_root):
         tree.write(file, encoding='utf-8')
     print(f'File written to - {download_file}')
 
-def generate_trodes_conf_file(probe_count, spike_config):
-    """_summary_
+def generate_trodes_conf_file(spike_conf_roots):
+    """generate trodes conf file
 
     Parameters
     ----------
-    probe_count : int
-        Number of probes
-    spike_config : _type_
-        _description_
+    spike_conf_roots : list[xmlElement]
+       list of xmlElement roots
 
     Returns
     -------
-    _type_
-        _description_
+    xmlElement
+        File to generate
     """    
-    base_config = ET.parse('trode_conf_base.xml')
-    base_config_current = base_config.getroot()
+    base_config = ET.parse(get_sibling_file('trode_conf_base.xml'))
+    base_config_current = copy.deepcopy(base_config.getroot())
     xml_elements = []
+    root_count = len(spike_conf_roots)
 
-    for index in range(0, probe_count):
+    for index, spike_conf_root in enumerate(spike_conf_roots):
         hwChan_increment = 128 * index
-        spike_config_items = copy.deepcopy(spike_config)
-        spike_config_len = len(spike_config)
+        spike_config_items = copy.deepcopy(spike_conf_root)
+        spike_config_len = len(spike_conf_root)
 
         for child in spike_config_items:
             child.attrib['id'] = str(int(child.attrib['id']) + (index * spike_config_len))
@@ -148,17 +94,50 @@ def generate_trodes_conf_file(probe_count, spike_config):
             xml_elements.append(child)
 
     base_config_current.find('SpikeConfiguration').extend(xml_elements)
+    base_config_current.find('StreamDisplay').attrib['pages'] = str(root_count)
     return base_config_current
 
-if __name__ == '__main__':
-    user_input = read_input()
-    spike_config_xml = get_trodes_conf(user_input['probe_type'])
-    trodes_conf_to_create = generate_trodes_conf_file(
-       user_input['probe_count'],
-       spike_config_xml,
-    )
+def create_trode_conf_file(trodes_file_name, trodes_conf_xml_root):
+    """Create trodes conf XML file
 
+    Parameters
+    ----------
+    trodes_conf_xml_root : Element
+        Element object
+    """
+    download_file = os.path.join(get_download_folder(), trodes_file_name)
+    tree = ET.ElementTree(trodes_conf_xml_root)
+    with open(download_file, 'wb') as file:
+        tree.write(file, encoding='utf-8')
+    print(f'File written to - {download_file}')
+
+def generate_trodes_file(probes, trodes_file_name = 'livermore_trodesconf.trodesconf'):
+    """Main function, generates Trodes file
+
+    Parameters
+    ----------
+    probes : list[int]
+        list of integers
+    trodes_file_name : str, optional
+        file name, by default 'livermore_trodesconf.trodesconf'
+
+    Raises
+    ------
+    ValueError
+        Raise error if ot all probe_types are valid
+    """    
+    if not all(probe in valid_probe_types for probe in probes):
+        raise ValueError(f'Probe list contain an invalid value. Your input was {probes}')
+    
+    spike_conf_roots = get_spike_conf_roots(probes)
+    trodes_conf_to_create = generate_trodes_conf_file(spike_conf_roots)
     create_trode_conf_file(
-        user_input['trode_conf_file_name'],
+        trodes_file_name,
         trodes_conf_to_create,
     )
+
+if __name__ == '__main__':
+    probes = [15, 20]
+    trodes_file_name = 'livermore_trodesconf.trodesconf'
+    
+    generate_trodes_file(probes, trodes_file_name)

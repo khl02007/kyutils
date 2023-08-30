@@ -1,4 +1,5 @@
 # kyutils
+
 useful utils
 
 ## Trode Config Generator
@@ -24,3 +25,11 @@ chmod +x ./trodes_conf_gen
 ```
 
 Add the desired values. Then the printout on the screen will tell you where to find the generated configuration file.
+
+You can also run the function
+
+```bash
+generate_trodes_file(probes, trodes_file_name = 'livermore_trodesconf.trodesconf')
+```
+
+to generate the trodes file
