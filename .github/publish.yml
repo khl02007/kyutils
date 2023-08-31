@@ -1,0 +1,42 @@
+name: Publish Python Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
+    - name: Install poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Update last digit of semantic version
+      run: |
+        version=$(poetry version | awk '{print $2}')
+        new_version=$(echo $version | awk -F. -v OFS=. '{$NF++; print}')
+        poetry version $new_version
+
+    - name: Commit and push new version to main
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Bump version to $new_version" -a
+        git push
+
+    - name: Publish package to PyPI
+      run: |
+        poetry publish --build -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
