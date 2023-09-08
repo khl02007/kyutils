@@ -68,7 +68,59 @@ def parseFields(fieldstr):
             typearr.append((str(fieldname), fieldtype, repeats))
     return np.dtype(typearr)
 
-def create_trodesconf(probe_list: List, out_path: str):
+
+def create_trodesconf_from_scratch(num_channels: int, out_path: str):
+    """Generate a trodesconf (XML) file based on the number of channels.
+    - Channel orders are numerical in HWChan.
+    - 128 channels per page in Trodes (four columns, 32 channels per column).
+    - All the channels will be in a single Ntrode. 
+    
+    Parameters
+    ----------
+    num_channels : int
+    out_path : str
+        path to save the trodesconf file
+    """
+    
+    assert isinstance(num_channels, int), "`num_channels` must be of type int"
+
+    base = ET.parse(script_dir / 'trode_conf_base.xml')
+    base_root = base.getroot()
+
+    StreamDisplay = base_root.find('StreamDisplay')
+    StreamDisplay.attrib['pages'] = str(int(np.ceil(num_channels/128)))
+
+    HardwareConfiguration = base_root.find('HardwareConfiguration')
+    HardwareConfiguration.attrib['numChannels'] = str(num_channels)
+
+    SpikeConfiguration = base_root.find('SpikeConfiguration')
+    
+    # define spikeNtrode
+    SpikeNTrode = ET.Element('SpikeNTrode')
+    SpikeNTrode_attrib_str = 'viewStimBand="0" rawScalingToUv="0.19500000000000001" lfpRefOn="0" rawRefOn="0" notchFilterOn="0" LFPHighFilter="200" viewLFPBand="0" filterOn="1" refNTrodeID="-1" moduleDataOn="0" LFPChan="1" refGroup="0" lfpFilterOn="0" color="#ffffff" lfpScalingToUv="0.19500000000000001" lowFilter="300" refOn="0" groupRefOn="0" viewSpikeBand="1" notchBW="10" highFilter="6000" refChan="1" spikeScalingToUv="0.19500000000000001" notchFreq="60"'
+    SpikeNTrode_attrib_dict = dict(item.split("=") for item in SpikeNTrode_attrib_str.split(" "))
+    for key, value in SpikeNTrode_attrib_dict.items():
+        SpikeNTrode.attrib[key] = str(value[1:-1])
+    # give id of 1
+    SpikeNTrode.attrib['id'] = str(1)
+    
+    # define SpikeChannel within SpikeNTrode
+    for i in range(num_channels):
+        SpikeChannel = ET.Element('SpikeChannel')
+        SpikeChannel_attrib_str = 'coord_ap="0" coord_dv="0" coord_ml="0" thresh="30" triggerOn="1" stimCapable="0" spikeSortingGroup="0" maxDisp="200"'
+        SpikeChannel_attrib_dict = dict(item.split("=") for item in SpikeChannel_attrib_str.split(" "))
+        for key, value in SpikeChannel_attrib_dict.items():
+            SpikeChannel.attrib[key] = str(value[1:-1])
+        SpikeChannel.attrib['hwChan'] = str(i)
+        SpikeNTrode.append(SpikeChannel)
+
+    SpikeConfiguration.append(SpikeNTrode)
+    
+    indent(base_root)
+    
+    base.write(out_path, encoding='utf-8', xml_declaration=True)
+
+def create_trodesconf_from_template(probe_list: List, out_path: str):
     """Generate a trodesconf (XML) file based on probe type sequence.
     - This works only for Livermore probes of type 15um or 20um.
     - Can specify any sequence of the two probe types of any length.

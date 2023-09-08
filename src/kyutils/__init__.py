@@ -1,1 +1,1 @@
-from .spikegadgets.trodesconf import create_trodesconf, readTrodesExtractedDataFile
+from .spikegadgets.trodesconf import readTrodesExtractedDataFile, create_trodesconf_from_scratch, create_trodesconf_from_template
