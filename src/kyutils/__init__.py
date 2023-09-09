@@ -1,1 +1,3 @@
 from .spikegadgets.trodesconf import readTrodesExtractedDataFile, create_trodesconf_from_scratch, create_trodesconf_from_template
+from .behavior.reward import get_licks_rewards, plot_performance
+from .probe.generate_probe import get_Livermore_15um, get_Livermore_20um
