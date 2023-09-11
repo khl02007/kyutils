@@ -29,7 +29,7 @@ def plot_spatial_raster(spike_times, position, t_position, ax=None):
     ax.plot(position[:,0], position[:,1], 'k', alpha=0.1)
     ax.plot(position[ind,0], position[ind,1], 'r.', markersize=2., alpha=0.7)
     
-    return (fig, ax)
+    return ax
 
 def find_file_with_extension(directory, extension):
     """
