@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
+import matplotlib.pyplot as plt
 
 def load_position_from_rec(rec_directory):
 
@@ -17,6 +18,18 @@ def load_position_from_rec(rec_directory):
     position_timestamps_ptp = t_position['data']['HWTimestamp']
     
     return (position_array, position_timestamps_ptp)
+
+def plot_spatial_raster(spike_times, position, t_position, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+        
+    ind = np.searchsorted(t_position, spike_times)
+    ind = ind[ind<len(position)]
+    
+    ax.plot(position[:,0], position[:,1], 'k', alpha=0.1)
+    ax.plot(position[ind,0], position[ind,1], 'r.', markersize=2., alpha=0.7)
+    
+    return (fig, ax)
 
 def find_file_with_extension(directory, extension):
     """
