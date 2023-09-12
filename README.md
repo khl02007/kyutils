@@ -9,3 +9,8 @@ some examples:
   - generate a trodesconf file given the number of channels; good for reconfiguring
 - header parser: parses the header of a SpikeGadgets `rec` file
 - behavior parser: given the extracted DIO dat files from a SpikeGadgets `rec` file, plots the time course of the animal's decisions in the W-track task and indicates rewarded trials
+
+installation:
+`pip install kyutils`
+
+for the version that creates figurl, `pip install "kyutils[figurl]"` and set up kachery cloud.
