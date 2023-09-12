@@ -94,12 +94,12 @@ def bin_spikes_into_position(spike_position, position, bin_size):
     
     return binned_spike_position, binned_position
 
-def plot_place_field(spike_train, position, t_position, bin_size=[10,10], sigma=1, ax=None):
+def plot_place_field(spike_times, position, t_position, bin_size=[10,10], sigma=1, ax=None):
     """Plots occupancy normalized place field
 
     Parameters
     ----------
-    spike_train : _type_
+    spike_times : _type_
         _description_
     position : _type_
         _description_
