@@ -13,6 +13,9 @@ matplotlib = "^3.7.2"
 spikeinterface = "^0.98.2"
 probeinterface = "^0.2.17"
 
+[tool.poetry.extras]
+figurl = ["kachery-cloud","sortingview"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
