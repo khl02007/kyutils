@@ -1,14 +1,11 @@
 from typing import List
 import numpy as np
 import xml.etree.ElementTree as ET
-
 from pathlib import Path
-
-script_dir = Path(__file__).parent
-
-import numpy as np
 import re
 from sys import argv
+
+script_dir = Path(__file__).parent
 
 def readTrodesExtractedDataFile(filename):
     with open(filename, 'rb') as f:
@@ -130,13 +127,14 @@ def create_trodesconf_from_template(probe_list: List, out_path: str):
     
     Parameters
     ----------
-    probe_types : iterable of 15 or 20
-        example: [20,15,20] for three probe implant with 20um, 15um, 20um types (in this order)
+    probe_types : List[Union['15um', '20um', '32tet']]
+        example: ['20um','15um','20um'] for three probe implant with 20um, 15um, 20um types (in this order)
     out_path : str
         path to save the trodesconf file
     """
+    probe_to_xml_dict = {'15um': 'spike_config_15.xml', '20um': 'spike_config_20.xml', '32tet': 'spike_config_32tet.xml'}
     
-    assert all(probe_type in [15, 20] for probe_type in probe_list), "Probe type must be either 15 or 20"
+    assert all(probe_type in probe_to_xml_dict.keys() for probe_type in probe_list), "Probe type must be '15um', '20um' or '32tet'"
 
     base = ET.parse(script_dir / 'trode_conf_base.xml')
     base_root = base.getroot()
@@ -150,10 +148,7 @@ def create_trodesconf_from_template(probe_list: List, out_path: str):
     SpikeConfiguration = base_root.find('SpikeConfiguration')
     for probe_idx in range(len(probe_list)):
         probe_type = probe_list[probe_idx]
-        if probe_type == 20:
-            probe_root = ET.parse(script_dir / 'spike_config_20.xml').getroot()
-        elif probe_type == 15:
-            probe_root = ET.parse(script_dir / 'spike_config_15.xml').getroot()
+        probe_root = ET.parse(script_dir / probe_to_xml_dict[probe_type]).getroot()
         for SpikeNTrode in probe_root.findall('.//SpikeNTrode'):
             SpikeNTrode.attrib['id'] = str(int(SpikeNTrode.attrib['id'])+32*probe_idx)
             for SpikeChannel in SpikeNTrode.findall('SpikeChannel'):
