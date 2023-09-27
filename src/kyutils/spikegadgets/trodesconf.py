@@ -119,11 +119,12 @@ def create_trodesconf_from_scratch(num_channels: int, out_path: str):
 
 def create_trodesconf_from_template(probe_list: List, out_path: str):
     """Generate a trodesconf (XML) file based on probe type sequence.
-    - This works only for Livermore probes of type 15um or 20um.
-    - Can specify any sequence of the two probe types of any length.
-    - Each probe will be displayed in a separate page in Trodes, with each shank in its own column.
-    - The order of the channels will be from top to bottom, with the contact side facing you.
-    - Each Ntrode contains 4 contacts. 
+    - This works for following probe types: Livermore probes of type 15um or 20um and 32 tetrode drive with EIB from SpikeGadgets.
+    - Can specify any (finite) sequence of the probe types.
+    - Each probe will be displayed in a separate page in Trodes, with each column column containing 32 channels.
+    - If Livermore 15um or 20um, the order of the channels will be from top to bottom with the contact side facing you.
+    - Each Ntrode contains 4 contacts for all probe types. 
+    - Blank is for place-hodler probe boards (not attached to any probe)
     
     Parameters
     ----------
