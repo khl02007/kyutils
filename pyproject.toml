@@ -16,7 +16,7 @@ scipy = "^1.7.1"
 scikit-learn = "^1.0.1"
 
 [tool.poetry.extras]
-figurl = ["kachery-cloud","sortingview"]
+figurl = ["kachery-cloud","sortingview","neuroconv"]
 
 [build-system]
 requires = ["poetry-core"]
