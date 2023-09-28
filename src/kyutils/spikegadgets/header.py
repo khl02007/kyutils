@@ -1,22 +1,25 @@
 import numpy as np
 from xml.etree import ElementTree
 
+
 def infer_header_size(file_path: str):
     "Find the size of the header of a rec file"
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         # Find the header size by searching for the '</Configuration>' marker
-        marker = b'</Configuration>'
+        marker = b"</Configuration>"
         marker_size = len(marker)
         header_size = file.read().find(marker) + marker_size
 
     return header_size
 
+
 def get_header(file_path):
     "Get header of a rec file"
     header_size = infer_header_size(file_path)
-    with open(file_path, mode='rb') as f:
-        header_txt = f.read(header_size).decode('utf8')
+    with open(file_path, mode="rb") as f:
+        header_txt = f.read(header_size).decode("utf8")
     return header_txt
+
 
 def xml_string_to_dict(xml_string):
     "Parse XML to python dictionary"
@@ -37,21 +40,25 @@ def xml_string_to_dict(xml_string):
                 result[child.tag] = child_dict
         # if element.text:
         #     result[element.tag] = element.text
-        if element.text and element.text.strip():  # Check if text content exists and is not just whitespace
+        if (
+            element.text and element.text.strip()
+        ):  # Check if text content exists and is not just whitespace
             result[element.tag] = element.text.strip()
         return result
 
     return element_to_dict(root)
 
+
 def read_one_packet(file_path, start_packet_location, packet_size):
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         # Set the file position to the location of the first packet
         file.seek(start_packet_location)
         packet = file.read(packet_size)
         return packet
 
+
 def bytes_to_integer(data, signed=False):
-    return int.from_bytes(data, byteorder='little', signed=False)
+    return int.from_bytes(data, byteorder="little", signed=False)
 
 
 # # Example

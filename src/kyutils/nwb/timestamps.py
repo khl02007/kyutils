@@ -10,35 +10,44 @@ from spikeinterface.core import BaseRecording, BaseRecordingSegment
 
 
 class TimestampsExtractor(BaseRecording):
-    def __init__(self, file_path, sampling_frequency=30e3,
-                 ):
-        
+    def __init__(
+        self,
+        file_path,
+        sampling_frequency=30e3,
+    ):
         time = readTrodesExtractedDataFile(file_path)
-        dtype = time['data']['systime'].dtype
- 
+        dtype = time["data"]["systime"].dtype
+
         BaseRecording.__init__(self, sampling_frequency, channel_ids=[0], dtype=dtype)
 
-        rec_segment = TimestampsSegment(datfile=file_path, sampling_frequency=sampling_frequency,
-                                        t_start=None, dtype=dtype)
+        rec_segment = TimestampsSegment(
+            datfile=file_path,
+            sampling_frequency=sampling_frequency,
+            t_start=None,
+            dtype=dtype,
+        )
         self.add_recording_segment(rec_segment)
+
 
 class TimestampsSegment(BaseRecordingSegment):
     def __init__(self, datfile, sampling_frequency, t_start, dtype):
-        BaseRecordingSegment.__init__(self, sampling_frequency=sampling_frequency, t_start=t_start)
+        BaseRecordingSegment.__init__(
+            self, sampling_frequency=sampling_frequency, t_start=t_start
+        )
         time = readTrodesExtractedDataFile(datfile)
-        self._timeseries = time['data']['systime']
-        
+        self._timeseries = time["data"]["systime"]
+
     def get_num_samples(self) -> int:
         return self._timeseries.shape[0]
 
-    def get_traces(self,
-                   start_frame: Union[int, None] = None,
-                   end_frame: Union[int, None] = None,
-                   channel_indices: Union[List, None] = None
-                   ) -> np.ndarray:
+    def get_traces(
+        self,
+        start_frame: Union[int, None] = None,
+        end_frame: Union[int, None] = None,
+        channel_indices: Union[List, None] = None,
+    ) -> np.ndarray:
         traces = np.squeeze(self._timeseries[start_frame:end_frame])
         return traces
-    
 
 
 class TimestampsDataChunkIterator(GenericDataChunkIterator):
@@ -107,6 +116,7 @@ class TimestampsDataChunkIterator(GenericDataChunkIterator):
             display_progress=display_progress,
             progress_bar_options=progress_bar_options,
         )
+
     # change channel id to always be first channel
     def _get_data(self, selection: Tuple[slice]) -> Iterable:
         return self.recording.get_traces(
@@ -116,8 +126,10 @@ class TimestampsDataChunkIterator(GenericDataChunkIterator):
             end_frame=selection[0].stop,
             return_scaled=self.return_scaled,
         )
+
     def _get_dtype(self):
         return self.recording.get_dtype()
+
     # remove the last dim for the timestamps since it is always just a 1D vector
     def _get_maxshape(self):
-        return (self.recording.get_num_samples(segment_index=self.segment_index), )
+        return (self.recording.get_num_samples(segment_index=self.segment_index),)
