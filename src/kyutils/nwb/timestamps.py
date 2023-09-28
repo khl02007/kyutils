@@ -8,6 +8,7 @@ import numpy as np
 from hdmf.data_utils import GenericDataChunkIterator
 from spikeinterface.core import BaseRecording, BaseRecordingSegment
 
+
 class TimestampsExtractor(BaseRecording):
     def __init__(
         self,
