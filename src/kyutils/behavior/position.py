@@ -146,9 +146,7 @@ def plot_place_field(
     # Put NaNs back to their original positions
     smoothed_array_with_nan = np.where(np.isnan(array), np.nan, smoothed_array)
 
-    ax.imshow(
-        smoothed_array_with_nan, cmap="hot", interpolation="nearest"
-    )
+    ax.imshow(smoothed_array_with_nan, cmap="hot", interpolation="nearest")
     return ax
 
 
