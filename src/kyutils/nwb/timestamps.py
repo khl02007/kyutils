@@ -6,6 +6,7 @@ from hdmf.data_utils import GenericDataChunkIterator
 from spikeinterface.core import BaseRecording, BaseRecordingSegment
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
+
 class TimestampsExtractor(BaseRecording):
     def __init__(
         self,

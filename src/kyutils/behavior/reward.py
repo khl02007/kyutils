@@ -77,7 +77,7 @@ def plot_performance(
     rewarded_lick_times_right,
     pump_on_times_left,
     pump_on_times_center,
-    pump_on_times_right
+    pump_on_times_right,
 ):
     ax.plot(
         first_lick_times_left,
