@@ -109,18 +109,18 @@ def plot_place_field(
 
     Parameters
     ----------
-    spike_times : _type_
-        _description_
-    position : _type_
-        _description_
-    t_position : _type_
-        _description_
+    spike_times : array_like
+        Timing of spikes
+    position : array_like
+        Position, (frames, 2)
+    t_position : array_like
+        Timestamp of the position
     bin_size : list, optional
         Size of the spatial bin ([x, y]); must be the same unit as the position (e.g. pixels), by default [10,10]
     sigma : int, optional
-        the standard deviation of the Gaussian kernel for smoothing, by default 1
-    ax : _type_, optional
-        _description_, by default None
+        The standard deviation of the Gaussian kernel for smoothing, by default 1
+    ax : matplotlib.axes object, optional
+        The axis object for the plot, by default None
 
     Returns
     -------
@@ -148,7 +148,7 @@ def plot_place_field(
 
     ax.imshow(
         smoothed_array_with_nan, cmap="hot", interpolation="nearest"
-    )  # , vmin=0, vmax=abs_max)
+    )
     return ax
 
 
