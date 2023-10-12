@@ -1,3 +1,4 @@
+import numpy as np
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
 
@@ -31,7 +32,7 @@ def get_licks_rewards(time, Din_well, Dout_pump):
     x = np.asarray(x)
     x = (x - time["data"]["systime"][0]) * 1e-9
 
-    lick_times = [x[i] for i in range(len(x)) if Din1["data"]["state"][i] == 1]
+    lick_times = [x[i] for i in range(len(x)) if Din_well["data"]["state"][i] == 1]
     lick_times = np.asarray(lick_times)
 
     # time between lick trains (unit: seconds)
@@ -57,7 +58,6 @@ def get_licks_rewards(time, Din_well, Dout_pump):
     ]
 
     # delay between detection of lick and delivery of reward (unit: seconds)
-    reward_delay_s = 0.2
     rewarded_lick_times = [
         i
         for i in first_lick_times
@@ -75,6 +75,9 @@ def plot_performance(
     rewarded_lick_times_left,
     rewarded_lick_times_center,
     rewarded_lick_times_right,
+    pump_on_times_left,
+    pump_on_times_center,
+    pump_on_times_right
 ):
     ax.plot(
         first_lick_times_left,

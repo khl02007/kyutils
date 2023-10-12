@@ -1,13 +1,10 @@
 from typing import List, Tuple, Iterable, Optional, Union
 
-import shutil
-from pathlib import Path
-
 import numpy as np
 
 from hdmf.data_utils import GenericDataChunkIterator
 from spikeinterface.core import BaseRecording, BaseRecordingSegment
-
+from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
 class TimestampsExtractor(BaseRecording):
     def __init__(
