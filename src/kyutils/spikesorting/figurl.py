@@ -1,5 +1,23 @@
-# curation_uri = "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
-def create_figurl_spikesorting(recording, sorting, label, curation_uri=None):
+def create_figurl_spikesorting(recording, sorting, label: str, curation_uri: str =None):
+    """Creates a figurl to view the sorting results.
+
+    Parameters
+    ----------
+    recording : si.Recording
+        Recording; have to be either Binary or NWB recording
+    sorting : si.Sorting
+        Sorting; have to be NpzSortingExtractor
+    label : str
+        label for this figurl
+    curation_uri : str, optional
+        path to json file containing curation information in the GitHub repository, by default None
+        example: "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
+
+    Returns
+    -------
+    url : str
+        figurl
+    """
     try:
         import kachery_cloud as kcl
         import sortingview as sv
@@ -67,5 +85,7 @@ def create_figurl_spikesorting(recording, sorting, label, curation_uri=None):
     )
     if curation_uri:
         url_state = {"sortingCuration": curation_uri}
+    else:
+        url_state = None
     url = view.url(label=label, state=url_state)
     return url
