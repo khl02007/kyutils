@@ -2,7 +2,7 @@ from typing import List
 
 
 # curation_uri = "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
-def create_figurl_spikesorting(recording, sorting, curation_uri, label):
+def create_figurl_spikesorting(recording, sorting, label, curation_uri=None):
     try:
         import kachery_cloud as kcl
         import sortingview as sv
@@ -66,6 +66,7 @@ def create_figurl_spikesorting(recording, sorting, curation_uri, label):
             ),
         ]
     )
-    url_state = {"sortingCuration": curation_uri}
+    if curation_uri:
+        url_state = {"sortingCuration": curation_uri}
     url = view.url(label=label, state=url_state)
     return url
