@@ -1,4 +1,6 @@
-def create_figurl_spikesorting(recording, sorting, label: str, curation_uri: str =None):
+def create_figurl_spikesorting(
+    recording, sorting, label: str, curation_uri: str = None
+):
     """Creates a figurl to view the sorting results.
 
     Parameters
