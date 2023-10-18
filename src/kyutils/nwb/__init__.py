@@ -1,1 +1,5 @@
-from .utils import SpikeInterfaceRecordingDataChunkIterator, TimestampsDataChunkIterator, TimestampsExtractor
+from .utils import (
+    SpikeInterfaceRecordingDataChunkIterator,
+    TimestampsDataChunkIterator,
+    TimestampsExtractor,
+)

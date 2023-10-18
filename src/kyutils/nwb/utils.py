@@ -6,6 +6,7 @@ from hdmf.data_utils import GenericDataChunkIterator
 from spikeinterface.core import BaseRecording, BaseRecordingSegment
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
+
 class SpikeInterfaceRecordingDataChunkIterator(GenericDataChunkIterator):
     """DataChunkIterator specifically for use on RecordingExtractor objects."""
 
@@ -90,7 +91,6 @@ class SpikeInterfaceRecordingDataChunkIterator(GenericDataChunkIterator):
             self.recording.get_num_samples(segment_index=self.segment_index),
             self.recording.get_num_channels(),
         )
-
 
 
 class TimestampsExtractor(BaseRecording):
