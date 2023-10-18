@@ -1,5 +1,3 @@
-from typing import List
-
 
 # curation_uri = "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
 def create_figurl_spikesorting(recording, sorting, label, curation_uri=None):
@@ -9,7 +7,7 @@ def create_figurl_spikesorting(recording, sorting, label, curation_uri=None):
         import sortingview.views as vv
         from sortingview.SpikeSortingView import SpikeSortingView
     except ImportError as e:
-        print(f"Error: {e}. Please install the missing package to proceed.")
+        print(f"Error: {e}. Please install `kachery-cloud` and `sortingview` to proceed.")
         return  # exit the function or handle this as needed
 
     X = SpikeSortingView.create(
