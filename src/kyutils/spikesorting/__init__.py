@@ -1,1 +1,1 @@
-from waveform import plot_waveforms
+from .waveform import plot_waveforms
