@@ -1,6 +1,7 @@
 import numpy as np
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
+
 def get_licks_rewards(time, Din_well, Dout_pump):
     """Returns the (relative) timing of the following events:
     - every lick at a reward well
