@@ -1,5 +1,26 @@
+from typing import List, Dict
+
+
+def create_curation_json(curation_json: str, labels: dict, merge_groups: list):
+    """Writes labels and merge_groups to a new curation.json file.
+
+    Parameters
+    ----------
+    curation_json : str
+        path where a new curation.json would be written
+        example: "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
+    initial_curation_json : str
+        _description_
+    labels : dict
+        _description_
+    merge_groups : list
+        _description_
+    """
+    return curation_json
+
+
 def create_figurl_spikesorting(
-    recording, sorting, label: str, curation_uri: str = None
+    recording, sorting, label: str, metrics: List[dict], curation_uri: str = None
 ):
     """Creates a figurl to view the sorting results.
 
@@ -14,6 +35,23 @@ def create_figurl_spikesorting(
     curation_uri : str, optional
         path to json file containing curation information in the GitHub repository, by default None
         example: "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
+
+    Example
+    -------
+    metrics = [
+        {
+            "name": 'isi_viol',
+            "label": 'fraction of ISI violations',
+            "tooltip": "fraction of ISI violations",
+            "data": {'1': 0.1, '2': 0.2, '3': 0.3},
+        },
+        {
+            "name": 'snrs',
+            "label": 'signal-to-noise ratio in z-score',
+            "tooltip": "signal-to-noise ratio",
+            "data": {'1': 0.1, '2': 0.1, '3': 1.3},
+        },
+        ]
 
     Returns
     -------
@@ -49,7 +87,7 @@ def create_figurl_spikesorting(
             vv.MountainLayoutItem(label="Summary", view=X.sorting_summary_view()),
             vv.MountainLayoutItem(
                 label="Units table",
-                view=X.units_table_view(unit_ids=X.unit_ids),
+                view=X.units_table_view(unit_ids=X.unit_ids, unit_metrics=metrics),
             ),
             vv.MountainLayoutItem(
                 label="Raster plot",
@@ -91,3 +129,21 @@ def create_figurl_spikesorting(
         url_state = None
     url = view.url(label=label, state=url_state)
     return url
+
+
+def _reformat_metrics(metrics: Dict[str, Dict[str, float]]) -> List[Dict]:
+    for metric_name in metrics:
+        metrics[metric_name] = {
+            str(unit_id): metric_value
+            for unit_id, metric_value in metrics[metric_name].items()
+        }
+    new_external_metrics = [
+        {
+            "name": metric_name,
+            "label": metric_name,
+            "tooltip": metric_name,
+            "data": metric,
+        }
+        for metric_name, metric in metrics.items()
+    ]
+    return new_external_metrics
