@@ -5,7 +5,9 @@ import json
 import numpy as np
 
 
-def compute_standard_metrics(waveform_extractor, path_to_json):
+def compute_standard_metrics(
+    waveform_extractor: si.WaveformExtractor, path_to_json: str
+):
     snrs = sq.compute_snrs(
         waveform_extractor,
         random_chunk_kwargs_dict={
