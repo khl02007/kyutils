@@ -67,11 +67,18 @@ def plot_waveforms_singleshank(
     ]
 
     ax.plot(
-        [-1 + ref_loc[0] / scale_x, -1 + ref_loc[0] / scale_x],
+        [
+            -3 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+            -3 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+        ],
         [ref_loc[1] / scale_y, 100 + ref_loc[1] / scale_y],
         "k-",
     )
-    ax.text(-2 + ref_loc[0] / scale_x, 50 + ref_loc[1] / scale_y, "100 $\mu$V")
+    ax.text(
+        -4 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+        50 + ref_loc[1] / scale_y,
+        "100 $\mu$V",
+    )
 
     ax.set_title(f"unit {unit_id}")
 
