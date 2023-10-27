@@ -76,7 +76,7 @@ def plot_waveforms_singleshank(
     )
     ax.text(
         -4 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
-        50 + ref_loc[1] / scale_y,
+        100 + ref_loc[1] / scale_y,
         "100 $\mu$V",
     )
 
