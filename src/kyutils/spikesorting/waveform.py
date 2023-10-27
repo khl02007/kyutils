@@ -52,10 +52,8 @@ def plot_waveforms_singleshank(
 
     t = np.linspace(0, 1, waveform_extractor.nsamples)
 
-    for i in waveform_extractor.channel_ids:
-        x, y = waveform_extractor.get_channel_locations()[
-            np.nonzero(waveform_extractor.channel_ids == i)[0][0]
-        ]
+    for i in range(len(waveform_extractor.channel_ids)):
+        x, y = waveform_extractor.get_channel_locations()[i]
         ax.plot(
             t + x / scale_x,
             waveform_extractor.get_template(unit_id=unit_id)[:, i] + y / scale_y,
