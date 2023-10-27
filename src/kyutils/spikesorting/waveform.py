@@ -56,7 +56,8 @@ def plot_waveforms_singleshank(
         x, y = waveform_extractor.get_channel_locations()[i]
         ax.plot(
             t + x / scale_x,
-            waveform_extractor.get_template(unit_id=unit_id)[:, i] + y / scale_y,
+            waveform_extractor.get_template(unit_id=unit_id, force_dense=True)[:, i]
+            + y / scale_y,
             "k",
         )
 
