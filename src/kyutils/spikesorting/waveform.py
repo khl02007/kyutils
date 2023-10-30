@@ -3,7 +3,9 @@ import spikeinterface as si
 import matplotlib.pyplot as plt
 
 
-def plot_waveforms(waveform_extractor, unit_id, scale_x=150, scale_y=0.5, ax=None):
+def plot_waveforms_multiprobe(
+    waveform_extractor, unit_id, scale_x=150, scale_y=0.5, ax=None
+):
     if ax is None:
         fig, ax = plt.subplots(figsize=(3, 10))
 
@@ -36,6 +38,49 @@ def plot_waveforms(waveform_extractor, unit_id, scale_x=150, scale_y=0.5, ax=Non
     ax.text(-2 + ref_loc[0] / scale_x, 50 + ref_loc[1] / scale_y, "100 $\mu$V")
 
     ax.set_title(f"probe {probe_idx}, unit {unit_id}")
+
+    ax.set_axis_off()
+
+    return ax
+
+
+def plot_waveforms_singleshank(
+    waveform_extractor, unit_id, scale_x=150, scale_y=0.5, ax=None
+):
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(3, 10))
+
+    t = np.linspace(0, 1, waveform_extractor.nsamples)
+
+    for i in range(len(waveform_extractor.channel_ids)):
+        x, y = waveform_extractor.get_channel_locations()[i]
+        ax.plot(
+            t + x / scale_x,
+            waveform_extractor.get_template(unit_id=unit_id, force_dense=True)[:, i]
+            + y / scale_y,
+            "k",
+        )
+
+    ref_loc = [
+        np.min(waveform_extractor.get_channel_locations()[:, 0]),
+        np.min(waveform_extractor.get_channel_locations()[:, 1]),
+    ]
+
+    ax.plot(
+        [
+            -3 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+            -3 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+        ],
+        [ref_loc[1] / scale_y, 100 + ref_loc[1] / scale_y],
+        "k-",
+    )
+    ax.text(
+        -4 / waveform_extractor.nsamples + ref_loc[0] / scale_x,
+        100 + ref_loc[1] / scale_y,
+        "100 $\mu$V",
+    )
+
+    ax.set_title(f"unit {unit_id}")
 
     ax.set_axis_off()
 
