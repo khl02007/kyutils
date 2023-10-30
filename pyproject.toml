@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-numpy = "^1.24.0"
+numpy = "^1.26.0"
 matplotlib = "^3.7.2"
 spikeinterface = "^0.98.2"
 probeinterface = "^0.2.17"
