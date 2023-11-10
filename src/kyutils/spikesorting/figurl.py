@@ -131,7 +131,39 @@ def create_figurl_spikesorting(
     return url
 
 
-def _reformat_metrics(metrics: Dict[str, Dict[str, float]]) -> List[Dict]:
+def reformat_metrics(metrics: Dict[str, Dict[str, float]]) -> List[Dict]:
+    """Converts metrics dict to a format acceptable to figurl
+
+    Parameters
+    ----------
+    metrics : Dict[str, Dict[str, float]]
+
+    Example:
+        {
+            'isi_viol': {'1': 0.1, '2': 0.2, '3': 0.3},
+            'snrs': {'1': 0.1, '2': 0.1, '3': 1.3},
+        }
+
+    Returns
+    -------
+    new_external_metrics : List[Dict]
+
+    Example:
+        [
+            {
+                "name": 'isi_viol',
+                "label": 'fraction of ISI violations',
+                "tooltip": "fraction of ISI violations",
+                "data" : {'1': 0.1, '2': 0.2, '3': 0.3},
+            },
+            {
+                "name": 'snrs',
+                "label": 'signal-to-noise ratio in z-score',
+                "tooltip": "signal-to-noise ratio",
+                "data" : {'1': 0.1, '2': 0.1, '3': 1.3},
+            }
+        ]
+    """
     for metric_name in metrics:
         metrics[metric_name] = {
             str(unit_id): metric_value
