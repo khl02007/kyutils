@@ -8,11 +8,24 @@ import numpy as np
 def compute_standard_metrics(
     waveform_extractor: si.WaveformExtractor, path_to_json: str
 ):
+    """Computes ISI violation, SNR, nearest neighbor isolation, and nearest neighbor noise overlap metrics.
+
+    Parameters
+    ----------
+    waveform_extractor : si.WaveformExtractor
+    path_to_json : str
+        path to save metrics dict as json file
+
+    Returns
+    -------
+    metrics_dict : dict
+        dict of metrics
+    """
     snrs = sq.compute_snrs(
         waveform_extractor,
         random_chunk_kwargs_dict={
             "num_chunks_per_segment": 20,
-            "chunk_size": 10000,
+            "chunk_size": 30000,
             "seed": 0,
         },
     )
@@ -30,19 +43,19 @@ def compute_standard_metrics(
     }
 
     nn_isolation_params = {
-        "max_spikes": 1000,
+        "max_spikes": 3000,
         "min_spikes": 10,
-        "n_neighbors": 5,
-        "n_components": 7,
+        "n_neighbors": 7,
+        "n_components": 10,
         "radius_um": 200,
         "seed": 0,
     }
 
     nn_noise_params = {
-        "max_spikes": 1000,
+        "max_spikes": 3000,
         "min_spikes": 10,
-        "n_neighbors": 5,
-        "n_components": 7,
+        "n_neighbors": 7,
+        "n_components": 10,
         "radius_um": 200,
         "seed": 0,
     }
