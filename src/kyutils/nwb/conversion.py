@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 import numpy as np
-from dateutil.tz import tzlocal
+from dateutil import tz
 import spikeinterface.full as si
 import probeinterface as pi
 
@@ -23,7 +23,9 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     nwbfile = NWBFile(
         session_description="Homebox",
         identifier=str(uuid4()),
-        session_start_time=datetime(2023, 9, 23, 19, 38, 35),
+        session_start_time=datetime(
+            2023, 9, 23, 19, 38, 35, tzinfo=tz.gettz("US/Pacific")
+        ),
         experimenter=["Lee, Kyu Hyun", "Adenekan, Philip"],
         lab="Loren Frank",
         institution="University of California, San Francisco",
@@ -118,7 +120,7 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     recording = si.BinaryRecordingExtractor(
         file_paths=dat_in_path,
         sampling_frequency=20000,
-        num_chan=512,
+        num_channels=512,
         dtype="int16",
         gain_to_uV=0.19500000000000001,
         offset_to_uV=0,
@@ -133,9 +135,7 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     )
 
     # Load timestamps
-    timestamps_extractor = TimestampsExtractor(
-        time_in_path,
-    )
+    timestamps_extractor = TimestampsExtractor(time_in_path, sampling_frequency=20e3)
 
     timestamps_iterator = TimestampsDataChunkIterator(
         recording=timestamps_extractor, buffer_gb=3
@@ -161,7 +161,9 @@ def convert_to_nwb_test(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     nwbfile = NWBFile(
         session_description="Homebox",
         identifier=str(uuid4()),
-        session_start_time=datetime(2023, 9, 23, 19, 38, 35),
+        session_start_time=datetime(
+            2023, 9, 23, 19, 38, 35, tzinfo=tz.gettz("US/Pacific")
+        ),
         experimenter=["Lee, Kyu Hyun", "Adenekan, Philip"],
         lab="Loren Frank",
         institution="University of California, San Francisco",
@@ -256,7 +258,7 @@ def convert_to_nwb_test(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     recording = si.BinaryRecordingExtractor(
         file_paths=dat_in_path,
         sampling_frequency=20000,
-        num_chan=512,
+        num_channels=512,
         dtype="int16",
         gain_to_uV=0.19500000000000001,
         offset_to_uV=0,
