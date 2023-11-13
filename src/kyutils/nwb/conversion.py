@@ -129,7 +129,7 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     recording = recording.channel_slice(channel_ids=nwbfile.electrodes.id[:])
 
     data_iterator = SpikeInterfaceRecordingDataChunkIterator(
-        recording=recording, return_scaled=True, buffer_gb=3
+        recording=recording, return_scaled=False, buffer_gb=3
     )
 
     # Load timestamps
@@ -146,6 +146,9 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
         data=data_iterator,
         electrodes=all_table_region,
         timestamps=timestamps_iterator,
+        conversion=0.19500000000000001e-6,
+        offset=0,
+
     )
 
     nwbfile.add_acquisition(raw_electrical_series)
@@ -267,12 +270,16 @@ def convert_to_nwb_test(dat_in_path: str, time_in_path: str, nwb_out_path: str):
     recording = recording.channel_slice(channel_ids=nwbfile.electrodes.id[:])
 
     data_iterator = SpikeInterfaceRecordingDataChunkIterator(
-        recording=recording, return_scaled=True, buffer_gb=3
+        recording=recording, return_scaled=False, buffer_gb=3
     )
 
     # Load timestamps
     timestamps_extractor = TimestampsExtractor(
         time_in_path,
+    )
+
+    timestamps_extractor = timestamps_extractor.frame_slice(
+        start_frame=0, end_frame=100000
     )
 
     timestamps_iterator = TimestampsDataChunkIterator(
@@ -284,6 +291,8 @@ def convert_to_nwb_test(dat_in_path: str, time_in_path: str, nwb_out_path: str):
         data=data_iterator,
         electrodes=all_table_region,
         timestamps=timestamps_iterator,
+        conversion=0.19500000000000001e-6,
+        offset=0,
     )
 
     nwbfile.add_acquisition(raw_electrical_series)
