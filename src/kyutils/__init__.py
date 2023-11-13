@@ -13,4 +13,4 @@ from .probe.generate_probe import get_Livermore_15um, get_Livermore_20um
 from .spikesorting.figurl import create_figurl_spikesorting
 from .spikesorting.waveform import plot_waveforms_singleshank, plot_waveforms_multiprobe
 
-from .nwb.conversion import convert_to_nwb
+from .nwb.conversion import convert_to_nwb, convert_to_nwb_test
