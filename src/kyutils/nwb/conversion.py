@@ -148,6 +148,7 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
         timestamps=timestamps_iterator,
         conversion=0.19500000000000001e-6,
         offset=0.0,
+        rate=20000.0,
     )
 
     nwbfile.add_acquisition(raw_electrical_series)
@@ -294,6 +295,7 @@ def convert_to_nwb_test(dat_in_path: str, time_in_path: str, nwb_out_path: str):
         timestamps=timestamps_iterator,
         conversion=0.19500000000000001e-6,
         offset=0.0,
+        rate=20000.0,
     )
 
     nwbfile.add_acquisition(raw_electrical_series)

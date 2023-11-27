@@ -119,7 +119,7 @@ class TimestampsSegment(BaseRecordingSegment):
             self, sampling_frequency=sampling_frequency, t_start=t_start
         )
         time = readTrodesExtractedDataFile(datfile)
-        self._timeseries = time["data"]["systime"]
+        self._timeseries = time["data"]["systime"] * 1e-9
 
     def get_num_samples(self) -> int:
         return self._timeseries.shape[0]
