@@ -41,7 +41,7 @@ def convert_to_nwb(dat_in_path: str, time_in_path: str, nwb_out_path: str):
         sex="M",
         genotype="wt",
         weight="0.485 kg",
-        date_of_birth=datetime(2023, 4, 24),
+        date_of_birth=datetime(2023, 4, 24, tzinfo=tz.gettz("US/Pacific")),
         strain="Long Evans",
     )
 
