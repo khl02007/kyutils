@@ -119,7 +119,7 @@ class TimestampsSegment(BaseRecordingSegment):
             self, sampling_frequency=sampling_frequency, t_start=t_start
         )
         time = readTrodesExtractedDataFile(datfile)
-        self._timeseries = time["data"]["systime"] * 1e-9
+        self._timeseries = generate_ephys_timestamps(time)
 
     def get_num_samples(self) -> int:
         return self._timeseries.shape[0]
@@ -132,6 +132,19 @@ class TimestampsSegment(BaseRecordingSegment):
     ) -> np.ndarray:
         traces = np.squeeze(self._timeseries[start_frame:end_frame])
         return traces
+
+
+from scipy.stats import linregress
+
+
+def generate_ephys_timestamps(t_ephys):
+    systime_seconds = t_ephys["data"]["systime"] * 1e-9
+    trodestime_index = t_ephys["data"]["time"]
+
+    slope, intercept, _, _, _ = linregress(trodestime_index, systime_seconds)
+    adjusted_timestamps = intercept + slope * trodestime_index
+
+    return adjusted_timestamps
 
 
 class TimestampsDataChunkIterator(GenericDataChunkIterator):
