@@ -133,7 +133,7 @@ def convert_to_nwb(
         description="all electrodes",
     )
 
-    sampling_frequency = 20000
+    sampling_frequency = 20000.0
 
     # Load recording
     recording = si.BinaryRecordingExtractor(
@@ -172,7 +172,7 @@ def convert_to_nwb(
         data=data_iterator,
         electrodes=all_table_region,
         starting_time=starting_time,  # timestamp of the first sample in seconds relative to the session start time
-        rate=int(sampling_frequency),
+        rate=sampling_frequency,
         # timestamps=timestamps_iterator,
         conversion=0.19500000000000001e-6,
         offset=0.0,
