@@ -17,6 +17,8 @@ from .utils import (
     SpikeInterfaceRecordingDataChunkIterator,
 )
 
+from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
+
 
 def convert_to_nwb(
     dat_in_path: str, time_in_path: str, nwb_out_path: str, session_id: str = "1"
@@ -131,10 +133,12 @@ def convert_to_nwb(
         description="all electrodes",
     )
 
+    sampling_frequency = 20000
+
     # Load recording
     recording = si.BinaryRecordingExtractor(
         file_paths=dat_in_path,
-        sampling_frequency=20000,
+        sampling_frequency=sampling_frequency,
         num_channels=512,
         dtype="int16",
         gain_to_uV=0.19500000000000001,
@@ -146,21 +150,30 @@ def convert_to_nwb(
     recording = recording.channel_slice(channel_ids=nwbfile.electrodes.id[:])
 
     data_iterator = SpikeInterfaceRecordingDataChunkIterator(
-        recording=recording, return_scaled=False, buffer_gb=3
+        recording=recording, return_scaled=False, buffer_gb=10
     )
 
     # Load timestamps
-    timestamps_extractor = TimestampsExtractor(time_in_path, sampling_frequency=20e3)
+    # timestamps_extractor = TimestampsExtractor(time_in_path, sampling_frequency=20e3)
 
-    timestamps_iterator = TimestampsDataChunkIterator(
-        recording=timestamps_extractor, buffer_gb=3
+    # timestamps_iterator = TimestampsDataChunkIterator(
+    #     recording=timestamps_extractor, buffer_gb=3
+    # )
+    time = readTrodesExtractedDataFile(time_in_path)
+    starting_time = (
+        time["data"]["systime"][
+            time["data"]["time"] == np.int(time["first_timestamp"])
+        ][0]
+        * 1e-9
     )
 
     raw_electrical_series = ElectricalSeries(
         name="ElectricalSeries",
         data=data_iterator,
         electrodes=all_table_region,
-        timestamps=timestamps_iterator,
+        starting_time=starting_time,  # timestamp of the first sample in seconds relative to the session start time
+        rate=sampling_frequency,
+        # timestamps=timestamps_iterator,
         conversion=0.19500000000000001e-6,
         offset=0.0,
     )
