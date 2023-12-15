@@ -47,7 +47,7 @@ def convert_to_nwb(
         lab="Loren Frank",
         institution="University of California, San Francisco",
         experiment_description="L10 continuous recording in homebox",
-        session_id="L10_1",
+        session_id=session_id,
     )
 
     # Add subject info
