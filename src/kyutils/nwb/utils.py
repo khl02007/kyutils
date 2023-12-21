@@ -1,5 +1,8 @@
 from typing import List, Tuple, Iterable, Optional, Union
 
+from datetime import datetime, timedelta, timezone
+import pytz
+
 import numpy as np
 
 from hdmf.data_utils import GenericDataChunkIterator
@@ -230,3 +233,28 @@ class TimestampsDataChunkIterator(GenericDataChunkIterator):
     # remove the last dim for the timestamps since it is always just a 1D vector
     def _get_maxshape(self):
         return (self.recording.get_num_samples(segment_index=self.segment_index),)
+
+
+def ptp_time_to_datetime(ptp_time, time_zone="America/Los_Angeles"):
+    """
+    Convert PTP (Precision Time Protocol) time in nanoseconds to a datetime object.
+    Allows specification of the time zone.
+    """
+    # Ensure the input is a native Python integer
+    ptp_time = int(ptp_time)
+
+    # Convert nanoseconds to seconds (integer part) and remaining nanoseconds
+    seconds = ptp_time // 1_000_000_000
+    nanoseconds = ptp_time % 1_000_000_000
+
+    # Create a datetime object for the Unix epoch in UTC
+    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+    # Add seconds and nanoseconds to the epoch
+    utc_datetime = epoch + timedelta(seconds=seconds, microseconds=nanoseconds / 1000)
+
+    # Convert to the specified time zone
+    target_time_zone = pytz.timezone(time_zone)
+    local_datetime = utc_datetime.astimezone(target_time_zone)
+
+    return local_datetime

@@ -14,3 +14,4 @@ from .spikesorting.figurl import create_figurl_spikesorting
 from .spikesorting.waveform import plot_waveforms_singleshank, plot_waveforms_multiprobe
 
 from .nwb.conversion import convert_to_nwb
+from .nwb.utils import ptp_time_to_datetime
