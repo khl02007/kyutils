@@ -2,6 +2,7 @@ from typing import List, Union
 import numpy as np
 import probeinterface as pi
 import pandas as pd
+import os
 
 
 def get_Livermore_15um(
@@ -358,7 +359,9 @@ def get_Rice_EBL_128ch_1s(
     shift=[0, 0],
 ):
     probe = pi.Probe(ndim=2, si_units="um")
-    k = pd.read_csv("./Rice_EBL_128ch_1s.csv")
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(script_dir, "Rice_EBL_128ch_1s.csv")
+    k = pd.read_csv(file_path)
     sg_device_channel_indices = k["SG ch#"].to_numpy()
     position_x = k["X, um"].to_numpy()
     position_y = k["Y, um"].to_numpy()
