@@ -358,7 +358,7 @@ def get_Rice_EBL_128ch_1s(
     shift=[0, 0],
 ):
     probe = pi.Probe(ndim=2, si_units="um")
-    k = pd.read_csv("Rice_EBL_128ch_1s.csv")
+    k = pd.read_csv("./Rice_EBL_128ch_1s.csv")
     sg_device_channel_indices = k["SG ch#"].to_numpy()
     position_x = k["X, um"].to_numpy()
     position_y = k["Y, um"].to_numpy()
