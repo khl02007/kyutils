@@ -352,7 +352,7 @@ def get_Livermore_20um(
     return Livermore_20um
 
 
-def get_Rice_EBL__20um(
+def get_Rice_EBL_128ch_1s(
     device_channel_indices: Union[str, List] = "SpikeGadgets",
     order: int = 0,
     shift=[0, 0],

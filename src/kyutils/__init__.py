@@ -9,7 +9,11 @@ from .behavior.position import (
     plot_spatial_raster,
     plot_place_field,
 )
-from .probe.generate_probe import get_Livermore_15um, get_Livermore_20um
+from .probe.generate_probe import (
+    get_Livermore_15um,
+    get_Livermore_20um,
+    get_Rice_EBL_128ch_1s,
+)
 from .spikesorting.figurl import create_figurl_spikesorting
 from .spikesorting.waveform import plot_waveforms_singleshank, plot_waveforms_multiprobe
 
