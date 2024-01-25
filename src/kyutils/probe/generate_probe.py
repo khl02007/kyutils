@@ -1,6 +1,7 @@
 from typing import List, Union
 import numpy as np
 import probeinterface as pi
+import pandas as pd
 
 
 def get_Livermore_15um(
@@ -349,3 +350,37 @@ def get_Livermore_20um(
     Livermore_20um.set_device_channel_indices(device_channel_indices)
     Livermore_20um.move(shift)
     return Livermore_20um
+
+
+def get_Rice_EBL__20um(
+    device_channel_indices: Union[str, List] = "SpikeGadgets",
+    order: int = 0,
+    shift=[0, 0],
+):
+    probe = pi.Probe(ndim=2, si_units="um")
+    k = pd.read_csv("Rice_EBL_128ch_1s.csv")
+    sg_device_channel_indices = k["SG ch#"].to_numpy()
+    position_x = k["X, um"].to_numpy()
+    position_y = k["Y, um"].to_numpy()
+    contact_ids = k["Pad #"].to_numpy()
+
+    position_x = position_x[~np.isnan(sg_device_channel_indices)]
+    position_y = position_y[~np.isnan(sg_device_channel_indices)]
+    contact_ids = contact_ids[~np.isnan(sg_device_channel_indices)]
+    sg_device_channel_indices = sg_device_channel_indices[
+        ~np.isnan(sg_device_channel_indices)
+    ]
+
+    positions = np.vstack((position_x, position_y)).T
+    probe.set_contacts(
+        positions=positions, shapes="circle", shape_params={"radius": 15}
+    )
+    contact_ids = contact_ids + order * 128
+    probe.set_contact_ids(contact_ids)
+    if device_channel_indices == "SpikeGadgets":
+        device_channel_indices = sg_device_channel_indices
+
+    device_channel_indices = device_channel_indices + order * 128
+    probe.set_device_channel_indices(device_channel_indices)
+    probe.move(shift)
+    return probe
