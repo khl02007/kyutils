@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kyutils"
-version = "0.1.60"
+version = "0.1.61"
 description = "kyu's utils"
 authors = ["Kyu Hyun Lee <kyuhyun9056@gmail.com>"]
 license = "MIT"
