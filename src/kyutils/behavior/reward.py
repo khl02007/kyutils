@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
 
@@ -140,3 +141,115 @@ def plot_performance(
         + len(first_lick_times_right)
     )
     ax.set_title(f"Overall performance: {performance}")
+
+
+def plot_performance(
+    first_lick_times_left,
+    first_lick_times_center,
+    first_lick_times_right,
+    rewarded_lick_times_left,
+    rewarded_lick_times_center,
+    rewarded_lick_times_right,
+    ax=None,
+):
+    """plots the behavior as a smoothed performance curve
+
+    Parameters
+    ----------
+    first_lick_times_left : _type_
+        _description_
+    first_lick_times_center : _type_
+        _description_
+    first_lick_times_right : _type_
+        _description_
+    rewarded_lick_times_left : _type_
+        _description_
+    rewarded_lick_times_center : _type_
+        _description_
+    rewarded_lick_times_right : _type_
+        _description_
+    ax : _type_, optional
+        _description_, by default None
+    """
+
+    def find_elements_within_threshold(array1, array2, threshold):
+        result = []
+        for element in array1:
+            # Check if any element in array2 is within the threshold of the current element
+            if np.any(np.abs(array2 - element) <= threshold):
+                result.append(1)
+            else:
+                result.append(0)
+        return np.asarray(result)
+
+    binary_left = find_elements_within_threshold(
+        array1=first_lick_times_left, array2=rewarded_lick_times_left, threshold=0.1
+    )
+    binary_center = find_elements_within_threshold(
+        array1=first_lick_times_center, array2=rewarded_lick_times_center, threshold=0.1
+    )
+    binary_right = find_elements_within_threshold(
+        array1=first_lick_times_right, array2=rewarded_lick_times_right, threshold=0.1
+    )
+    first_lick_times = np.concatenate(
+        (first_lick_times_left, first_lick_times_center, first_lick_times_right)
+    )
+    rewarded = np.concatenate((binary_left, binary_center, binary_right))
+
+    inds = np.argsort(first_lick_times)
+    first_lick_times_sorted = first_lick_times[inds]
+    rewarded_sorted = rewarded[inds]
+
+    trial_type = ["inbound"]
+    for i in range(len(rewarded_sorted) - 1):
+        if rewarded_sorted[i] == 0:
+            trial_type.append(trial_type[i])
+        else:
+            if trial_type[i] == "inbound":
+                trial_type.append("outbound")
+            else:
+                trial_type.append("inbound")
+
+    rewarded_inbound = rewarded_sorted[np.asarray(trial_type) == "inbound"]
+    rewarded_outbound = rewarded_sorted[np.asarray(trial_type) == "outbound"]
+
+    lick_times_inbound = first_lick_times_sorted[np.asarray(trial_type) == "inbound"]
+    lick_times_outbound = first_lick_times_sorted[np.asarray(trial_type) == "outbound"]
+
+    def moving_average_filter(input_array, window_size=3):
+        """
+        Applies a moving average filter to an input array.
+
+        Parameters:
+        - input_array: A numpy array to which the filter will be applied.
+        - window_size: The size of the window over which to compute the average.
+
+        Returns:
+        - filtered_array: A numpy array after applying the moving average filter.
+        """
+        # Create a window of ones for the moving average
+        window = np.ones(int(window_size)) / float(window_size)
+        # Apply convolution to get the moving average
+        filtered_array = np.convolve(input_array, window, "valid")
+        return filtered_array
+
+    smoothed_rewarded_inbound = moving_average_filter(rewarded_inbound, window_size=5)
+    smoothed_rewarded_outbound = moving_average_filter(rewarded_outbound, window_size=5)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(
+        np.arange(len(smoothed_rewarded_inbound) + 1),
+        np.concatenate(([0], smoothed_rewarded_inbound)),
+    )
+    ax.plot(
+        np.arange(len(smoothed_rewarded_outbound) + 1),
+        np.concatenate(([0], smoothed_rewarded_outbound)),
+    )
+    ax.set_ylim([0, 1])
+    ax.set_xlabel("Trials")
+    ax.set_ylabel("Performance")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    return rewarded_inbound, rewarded_outbound, lick_times_inbound, lick_times_outbound
