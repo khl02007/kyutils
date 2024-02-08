@@ -60,9 +60,7 @@ def get_licks_rewards(time, Din_well, Dout_pump):
 
     # delay between detection of lick and delivery of reward (unit: seconds)
     rewarded_lick_times = [
-        i
-        for i in first_lick_times
-        if np.min(np.abs(pump_on_times - i)) < rewarded_lick_times
+        i for i in first_lick_times if np.min(np.abs(pump_on_times - i)) < 0.1
     ]
 
     return lick_times, first_lick_times, pump_on_times, rewarded_lick_times
