@@ -143,7 +143,7 @@ def plot_performance(
     ax.set_title(f"Overall performance: {performance}")
 
 
-def plot_performance(
+def plot_performance_as_curve(
     first_lick_times_left,
     first_lick_times_center,
     first_lick_times_right,
