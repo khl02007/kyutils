@@ -19,3 +19,5 @@ from .spikesorting.waveform import plot_waveforms_singleshank, plot_waveforms_mu
 
 from .nwb.conversion import convert_to_nwb
 from .nwb.utils import ptp_time_to_datetime
+
+from .decoding import get_spike_indicator, get_ahead_behind
