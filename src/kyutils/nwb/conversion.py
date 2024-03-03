@@ -10,12 +10,19 @@ from pynwb import NWBHDF5IO, NWBFile
 from pynwb.ecephys import ElectricalSeries
 from pynwb.file import Subject
 
-from ..probe.generate_probe import get_Livermore_20um, get_Livermore_15um
+from ..probe.generate_probe import (
+    get_Livermore_20um,
+    get_Livermore_15um,
+    get_Rice_EBL_128ch_1s,
+)
 from .utils import (
     TimestampsExtractor,
     TimestampsDataChunkIterator,
     SpikeInterfaceRecordingDataChunkIterator,
 )
+
+import kyutils
+import matplotlib.pyplot as plt
 
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
@@ -182,3 +189,77 @@ def convert_to_nwb(
 
     with NWBHDF5IO(nwb_out_path, "w") as io:
         io.write(nwbfile)
+
+
+def compare_binary_to_nwb(
+    dat_path, nwb_path, target_channel_id=0, frames_to_compare=3000
+):
+    """Compare traces from binary recording to NWB recording for a 128ch NET EBL probe.
+
+    Parameters
+    ----------
+    dat_path : str
+        path to extracted binary file (with reconfig making the hw channel order numerical)
+    nwb_path : str
+        path to converted NWB file
+    target_channel_id : int, optional
+        channel to compare, by default 0
+    frames_to_compare : int, optional
+        number of first N frames to load and compare, by default 3000
+    """
+    recording_dat = si.BinaryRecordingExtractor(
+        dat_path,
+        sampling_frequency=30e3,
+        dtype=np.int16,
+        num_channels=128,
+        gain_to_uV=0.19500000000000001,
+        offset_to_uV=0,
+        is_filtered=False,
+    )
+    recording_dat = recording_dat.set_probe(get_Rice_EBL_128ch_1s())
+    recording_nwb = si.read_nwb_recording(nwb_path)
+
+    if type(target_channel_id) is int:
+        target_channel_id = [target_channel_id]
+    print(
+        f"Using channel {target_channel_id} from binary recording to compare with NWB recording."
+    )
+
+    target_channel_loc = recording_dat.get_channel_locations()[
+        recording_dat.get_channel_ids() == target_channel_id
+    ]
+    print(
+        f"Location of channel {target_channel_id} from binary recording: {target_channel_loc}"
+    )
+
+    target_channel_idx_nwb = np.where(
+        np.all(recording_nwb.get_channel_locations() == target_channel_loc, axis=1)
+    )[0]
+    target_channel_id_nwb = recording_nwb.get_channel_ids()[target_channel_idx_nwb]
+    target_channel_loc_nwb = recording_dat.get_channel_locations()[
+        target_channel_idx_nwb
+    ]
+
+    print(
+        f"Channel {target_channel_id} in binary recording is channel {target_channel_id_nwb} in NWB recording."
+    )
+    print(
+        f"Location of channel {target_channel_id_nwb} in NWB recording: {target_channel_loc_nwb}"
+    )
+
+    traces_dat = recording_dat.get_traces(
+        end_frame=frames_to_compare, channel_ids=target_channel_id, return_scaled=True
+    )
+    traces_nwb = recording_nwb.get_traces(
+        end_frame=frames_to_compare,
+        channel_ids=target_channel_id_nwb,
+        return_scaled=True,
+    )
+
+    plt.plot(traces_dat)
+    plt.plot(traces_nwb)
+    plt.show()
+
+    print(
+        f"Do the values agree to within 1 microV? {np.allclose(traces_dat, traces_nwb, atol=1)}"
+    )

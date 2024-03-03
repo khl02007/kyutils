@@ -2,24 +2,30 @@ import numpy as np
 import bottleneck
 import position_tools as pt
 import trajectory_analysis_tools as tat
+from spikeinterface import BaseSorting
+from numpy.typing import NDArray
 
 
-def get_spike_indicator(sorting, time, timestamps_ephys):
-    """_summary_
+def get_spike_indicator(
+    sorting: BaseSorting,
+    time: NDArray[np.float64],
+    timestamps_ephys: NDArray[np.float64],
+):
+    """Count the number of spikes of all the units in a sorting in bins defined by `time`.
 
     Parameters
     ----------
-    sorting : _type_
-        _description_
-    time : _type_
-        time vector for decoding
-    timestamps_ephys : _type_
-        timestamps for ephys
+    sorting : spikeinterface.BaseSorting
+        sorting object
+    time : NDArray[np.float64], (N, )
+        time vector for decoding; usually separated by 2 ms
+    timestamps_ephys : NDArray[np.float64], (N, )
+        timestamps for ephys; used to convert the spike timings from index to seconds.
 
     Returns
     -------
-    _type_
-        _description_
+    spike_indicator : NDArray[np.int], (N, K) where K=number of units in the sorting
+        Number of spikes per bin.
     """
     spike_indicator = []
     for unit_id in sorting.get_unit_ids():
@@ -32,15 +38,28 @@ def get_spike_indicator(sorting, time, timestamps_ephys):
 
 
 def smooth_position(position, t_position, position_sampling_rate):
-    # "max_LED_separation": 9.0,
+    """Smooths position using a number of methods:
+    - detects changes that are too rapid, replaces those with nan, and interpolates over them
+    - applies a moving average
+
+
+    Parameters
+    ----------
+    position : _type_
+        _description_
+    t_position : _type_
+        _description_
+    position_sampling_rate : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     max_plausible_speed = (100.0,)
     position_smoothing_duration = 0.125
     speed_smoothing_std_dev = 0.100
-    orient_smoothing_std_dev = 0.001
-    # "led1_is_front": 1,
-    # "is_upsampled": 0,
-    # "upsampling_sampling_rate": None,
-    upsampling_interpolation_method = "linear"
 
     speed = pt.get_speed(
         position,
@@ -58,6 +77,89 @@ def smooth_position(position, t_position, position_sampling_rate):
     position = bottleneck.move_mean(
         position, window=moving_average_window, axis=0, min_count=1
     )
+
+    # def remove_tracking_errors(data, threshold=30):
+    #     # Calculate the differences between consecutive points
+    #     diffs = np.diff(data, axis=0)
+    #     distances = np.linalg.norm(diffs, axis=1)
+
+    #     # Identify points where the change exceeds the threshold
+    #     error_indices = np.where(distances > threshold)[0] + 1
+
+    #     # Handle edge case where the first or last point is an error
+    #     if 0 in error_indices:
+    #         data[0] = data[1]
+    #     if len(data) - 1 in error_indices:
+    #         data[-1] = data[-2]
+
+    #     # Interpolate over errors
+    #     for index in error_indices:
+    #         if index < len(data) - 1:
+    #             data[index] = (data[index - 1] + data[index + 1]) / 2
+
+    #     return data
+
+    # def moving_average(data, window_size=3):
+    #     """Simple moving average"""
+    #     return np.convolve(data, np.ones(window_size) / window_size, mode="same")
+
+    # def detect_extended_jumps(data, smoothed_data, threshold):
+    #     """Detects extended jumps in the data"""
+    #     distances = np.linalg.norm(data - smoothed_data, axis=1)
+    #     return distances > threshold
+
+    # def segment_data(data, is_jump):
+    #     """Segments the data into normal and jump segments"""
+    #     segments = []
+    #     start = 0
+
+    #     for i in range(1, len(is_jump)):
+    #         if is_jump[i] != is_jump[i - 1]:
+    #             segments.append((start, i, is_jump[i - 1]))
+    #             start = i
+    #     segments.append((start, len(is_jump), is_jump[-1]))
+
+    #     return segments
+
+    # def interpolate_jumps(data, segments):
+    #     """Interpolates over the segments identified as jumps"""
+    #     for start, end, is_jump in segments:
+    #         if is_jump:
+    #             if start == 0:
+    #                 data[start:end] = data[end]
+    #             elif end == len(data):
+    #                 data[start:end] = data[start - 1]
+    #             else:
+    #                 interp_values = np.linspace(data[start - 1], data[end], end - start)
+    #                 data[start:end] = interp_values
+    #     return data
+
+    # def remove_extended_jumps(
+    #     data, jump_threshold=30, outlier_threshold=50, window_size=5
+    # ):
+    #     # Initial jump removal
+    #     data = remove_tracking_errors(data, threshold=jump_threshold)
+
+    #     # Calculate smoothed trajectory
+    #     smoothed_data = np.vstack(
+    #         (
+    #             moving_average(data[:, 0], window_size),
+    #             moving_average(data[:, 1], window_size),
+    #         )
+    #     ).T
+
+    #     # Detect extended jumps
+    #     is_jump = detect_extended_jumps(data, smoothed_data, outlier_threshold)
+
+    #     # Segment the data
+    #     segments = segment_data(data, is_jump)
+
+    #     # Interpolate over extended jumps
+    #     return interpolate_jumps(data, segments)
+
+    # # Process the data
+    # position = remove_extended_jumps(position)
+
     return position
 
 
