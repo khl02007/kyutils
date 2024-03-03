@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "kyutils"
-version = "0.1.64"
+version = "0.1.66"
 description = "kyu's utils"
 authors = ["Kyu Hyun Lee <kyuhyun9056@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.9,<3.12"
 numpy = "^1.26.0"
 matplotlib = "^3.7.2"
 spikeinterface = "^0.98.2"
