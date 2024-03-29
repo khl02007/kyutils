@@ -21,7 +21,6 @@ from .utils import (
     SpikeInterfaceRecordingDataChunkIterator,
 )
 
-import kyutils
 import matplotlib.pyplot as plt
 
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile

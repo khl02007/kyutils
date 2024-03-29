@@ -37,6 +37,21 @@ def get_spike_indicator(
     return np.asarray(spike_indicator).T
 
 
+def plot_place_fields_ratemap_from_classifier(
+    path_to_classifier_model, unit_id, ax=None, color="red", alpha=1
+):
+    classifier = rtc.SortedSpikesClassifier.load_model(
+        filename=path_to_classifier_model
+    )
+    place_fields = classifier.place_fields_[("", direction)].values / 0.002
+    linearized_position = classifier.place_fields_[("", direction)].position.values
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(5, 3))
+    ax.plot(linearized_position, place_fields[:, unit_id], color=color, alpha=alpha)
+    # ax.set_xlabel("Linearized position (cm)")
+    # ax.set_ylabel('P(spike|position)')
+
+
 def smooth_position(position, t_position, position_sampling_rate):
     """Smooths position using a number of methods:
     - detects changes that are too rapid, replaces those with nan, and interpolates over them

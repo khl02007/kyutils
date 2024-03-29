@@ -15,10 +15,9 @@ def load_position_from_rec(rec_directory):
 
     Returns
     -------
-    position_array :
-        _description_
-    position_timestamps_ptp :
-        timestamp for position of the marker detecte in each frame of the video, in PTP time (seconds)
+    position_array : numpy.ndarray[float], (frames, dimensions)
+    position_timestamps_ptp : np.array
+        timestamp for position of the marker detected in each frame of the video, in PTP time (seconds)
     """
 
     online_tracking_file = find_file_with_extension(
@@ -41,15 +40,15 @@ def load_position_from_rec(rec_directory):
 
 
 def plot_spatial_raster(spike_times, position, t_position, ax=None):
-    """Plots the position of the animal when the given neuron fired a spike
+    """Plots the position of the animal when the given neuron fired a spike.
 
     Parameters
     ----------
-    spike_times : numpy.nadarray[float]
+    spike_times : numpy.ndarray[float]
         Array of spike times
     position : numpy.ndarray[float], (frames, dimensions)
         Array of position
-    t_position : numpy.nadarray[float]
+    t_position : numpy.ndarray[float]
         Array of timestamps for the position; must be aligned with the spike times
     ax : matplotlib.axes, optional
         The axis on which to plot, by default None
@@ -165,21 +164,6 @@ def find_file_with_extension(directory, extension):
         if filename.endswith(extension):
             return os.path.join(directory, filename)
     return None
-
-
-def plot_place_fields_ratemap(
-    brain_area, epoch, direction, unit_id, ax=None, color="red", alpha=1
-):
-    classifier = rtc.SortedSpikesClassifier.load_model(
-        filename=f"/nimbus/kyu/L10/20231006/run_epochs/classifier_{brain_area}_nn0.1_1d_{epoch}_direction_fit.pkl"
-    )
-    place_fields = classifier.place_fields_[("", direction)].values / 0.002
-    linearized_position = classifier.place_fields_[("", direction)].position.values
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(5, 3))
-    ax.plot(linearized_position, place_fields[:, unit_id], color=color, alpha=alpha)
-    # ax.set_xlabel("Linearized position (cm)")
-    # ax.set_ylabel('P(spike|position)')
 
 
 # fig, ax = plt.subplots(21)
