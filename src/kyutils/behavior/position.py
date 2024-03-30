@@ -3,6 +3,7 @@ import numpy as np
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
+import pandas as pd
 
 
 def load_position_from_rec(rec_directory):
@@ -312,27 +313,29 @@ def get_trajectory_direction(linear_distance):
     return np.where(is_inbound, "Inbound", "Outbound"), is_inbound
 
 
-def get_position_interp(predict_epoch):
+def get_position_from_dlc(
+    path_to_dlc_h5,
+    dlc_tag,
+    body_part,
+    t_position,
+    pixels_to_cm=5.3,
+    offset=10,
+    position_time_bin=2e-3,
+):
 
-    path_to_position = f"/cumulus/kyu/L10/20231006/dlc/L10-20231006-phil-2023-10-26/videos/{predict_epoch}DLC_resnet50_L10-20231006Oct26shuffle1_1230000_filtered.h5"
+    df = pd.read_hdf(path_to_dlc_h5)
 
-    df = pd.read_hdf(path_to_position)
-
-    x = df[("DLC_resnet50_L10-20231006Oct26shuffle1_1230000", "led", "x")].to_numpy()
-    y = df[("DLC_resnet50_L10-20231006Oct26shuffle1_1230000", "led", "y")].to_numpy()
+    x = df[(dlc_tag, body_part, "x")].to_numpy()
+    y = df[(dlc_tag, body_part, "y")].to_numpy()
 
     position = np.column_stack((x, y))
-    pixels_to_cm = 5.3
-    position_offset = 10
 
-    position = position[position_offset:] / pixels_to_cm
+    position = position[offset:] / pixels_to_cm
 
-    ref_time_offset = timestamps_ephys[predict_epoch][0]
-    t_position = timestamps_position[predict_epoch][position_offset:] - ref_time_offset
     position_sampling_rate = len(t_position) / (t_position[-1] - t_position[0])
     start_time = t_position[0]
     end_time = t_position[-1]
-    sampling_rate = int(1 / (2e-3))
+    sampling_rate = int(1 / position_time_bin)
     n_samples = int(np.ceil((end_time - start_time) * sampling_rate)) + 1
 
     time = np.linspace(start_time, end_time, n_samples)
@@ -341,10 +344,9 @@ def get_position_interp(predict_epoch):
     position_smoothing_duration = 0.125
     speed_smoothing_std_dev = 0.100
     orient_smoothing_std_dev = 0.001
-    # "led1_is_front": 1,
-    # "is_upsampled": 0,
-    # "upsampling_sampling_rate": None,
     upsampling_interpolation_method = "linear"
+
+    import position_tools as pt
 
     speed = pt.get_speed(
         position,
@@ -358,119 +360,27 @@ def get_position_interp(predict_epoch):
 
     position = pt.interpolate_nan(position)
 
-    import bottleneck
+    return position, time
 
-    moving_average_window = int(position_smoothing_duration * position_sampling_rate)
-    position = bottleneck.move_mean(
-        position, window=moving_average_window, axis=0, min_count=1
-    )
 
-    def remove_tracking_errors(data, threshold=30):
-        # Calculate the differences between consecutive points
-        diffs = np.diff(data, axis=0)
-        distances = np.linalg.norm(diffs, axis=1)
+def linearize_position(
+    position, node_positions, edges, linear_edge_order, linear_edge_spacing
+):
+    """Linearize and interpolate position
 
-        # Identify points where the change exceeds the threshold
-        error_indices = np.where(distances > threshold)[0] + 1
+    Parameters
+    ----------
+    node_positions : _type_
+        _description_
+    edges : _type_
+        _description_
+    linear_edge_order : _type_
+        _description_
+    linear_edge_spacing : _type_
+        _description_
 
-        # Handle edge case where the first or last point is an error
-        if 0 in error_indices:
-            data[0] = data[1]
-        if len(data) - 1 in error_indices:
-            data[-1] = data[-2]
-
-        # Interpolate over errors
-        for index in error_indices:
-            if index < len(data) - 1:
-                data[index] = (data[index - 1] + data[index + 1]) / 2
-
-        return data
-
-    def moving_average(data, window_size=3):
-        """Simple moving average"""
-        return np.convolve(data, np.ones(window_size) / window_size, mode="same")
-
-    def remove_outliers_and_errors(data, jump_threshold=30, outlier_threshold=50):
-        # Remove large jumps first
-        data = remove_tracking_errors(data, threshold=jump_threshold)
-
-        # Calculate smoothed trajectory
-        smoothed_data = np.vstack(
-            (moving_average(data[:, 0]), moving_average(data[:, 1]))
-        ).T
-
-        # Identify and handle outliers
-        for i in range(len(data)):
-            if np.linalg.norm(data[i] - smoothed_data[i]) > outlier_threshold:
-                # Handle edge cases
-                if i == 0:
-                    data[i] = data[i + 1]
-                elif i == len(data) - 1:
-                    data[i] = data[i - 1]
-                else:
-                    data[i] = (data[i - 1] + data[i + 1]) / 2
-
-        return data
-
-    def detect_extended_jumps(data, smoothed_data, threshold):
-        """Detects extended jumps in the data"""
-        distances = np.linalg.norm(data - smoothed_data, axis=1)
-        return distances > threshold
-
-    def segment_data(data, is_jump):
-        """Segments the data into normal and jump segments"""
-        segments = []
-        start = 0
-
-        for i in range(1, len(is_jump)):
-            if is_jump[i] != is_jump[i - 1]:
-                segments.append((start, i, is_jump[i - 1]))
-                start = i
-        segments.append((start, len(is_jump), is_jump[-1]))
-
-        return segments
-
-    def interpolate_jumps(data, segments):
-        """Interpolates over the segments identified as jumps"""
-        for start, end, is_jump in segments:
-            if is_jump:
-                if start == 0:
-                    data[start:end] = data[end]
-                elif end == len(data):
-                    data[start:end] = data[start - 1]
-                else:
-                    interp_values = np.linspace(data[start - 1], data[end], end - start)
-                    data[start:end] = interp_values
-        return data
-
-    def remove_extended_jumps(
-        data, jump_threshold=30, outlier_threshold=50, window_size=5
-    ):
-        # Initial jump removal
-        data = remove_tracking_errors(data, threshold=jump_threshold)
-
-        # Calculate smoothed trajectory
-        smoothed_data = np.vstack(
-            (
-                moving_average(data[:, 0], window_size),
-                moving_average(data[:, 1], window_size),
-            )
-        ).T
-
-        # Detect extended jumps
-        is_jump = detect_extended_jumps(data, smoothed_data, outlier_threshold)
-
-        # Segment the data
-        segments = segment_data(data, is_jump)
-
-        # Interpolate over extended jumps
-        return interpolate_jumps(data, segments)
-
-    # Process the data
-    position = remove_extended_jumps(position)
-
-    # plt.plot(position[:,0], position[:,1])
-
+    Example (W-track)
+    -----------------
     node_positions = np.array(
         [
             (55, 81),  # center well
@@ -500,6 +410,8 @@ def get_position_interp(predict_epoch):
         (5, 2),
     ]
     linear_edge_spacing = 15
+    """
+    import track_linearization as tl
 
     track_graph = tl.make_track_graph(node_positions, edges)
 
@@ -510,6 +422,12 @@ def get_position_interp(predict_epoch):
         edge_spacing=linear_edge_spacing,
     )
 
+    return position_interp
+
+
+def interpolate_position(position_df, t_position, time):
+    import scipy
+
     f_pos = scipy.interpolate.interp1d(
         t_position,
         position_df["linear_position"],
@@ -518,6 +436,7 @@ def get_position_interp(predict_epoch):
         kind="linear",
     )
     position_interp = f_pos(time)
+
     return position_interp, time
 
 
