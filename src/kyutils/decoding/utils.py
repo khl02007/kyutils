@@ -1,5 +1,4 @@
 import numpy as np
-import bottleneck
 import position_tools as pt
 import trajectory_analysis_tools as tat
 from spikeinterface import BaseSorting
@@ -88,10 +87,10 @@ def smooth_position(position, t_position, position_sampling_rate):
 
     position = pt.interpolate_nan(position)
 
-    moving_average_window = int(position_smoothing_duration * position_sampling_rate)
-    position = bottleneck.move_mean(
-        position, window=moving_average_window, axis=0, min_count=1
-    )
+    # moving_average_window = int(position_smoothing_duration * position_sampling_rate)
+    # position = bottleneck.move_mean(
+    #     position, window=moving_average_window, axis=0, min_count=1
+    # )
 
     # def remove_tracking_errors(data, threshold=30):
     #     # Calculate the differences between consecutive points
