@@ -1,5 +1,4 @@
 import numpy as np
-import position_tools as pt
 import trajectory_analysis_tools as tat
 from spikeinterface import BaseSorting
 from numpy.typing import NDArray
@@ -71,6 +70,8 @@ def smooth_position(position, t_position, position_sampling_rate):
     _type_
         _description_
     """
+    import position_tools as pt
+
     max_plausible_speed = (100.0,)
     position_smoothing_duration = 0.125
     speed_smoothing_std_dev = 0.100

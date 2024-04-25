@@ -1,18 +1,7 @@
-import spikeinterface.full as si
 import numpy as np
-import kyutils
-import pickle
 
-import matplotlib.pyplot as plt
-import replay_trajectory_classification as rtc
-import scipy
 import sortingview.views as vv
-import position_tools as pt
 import ripple_detection as rd
-import pandas as pd
-import track_linearization as tl
-import xarray as xr
-import trajectory_analysis_tools as tat
 
 from scipy.ndimage import gaussian_filter1d
 
