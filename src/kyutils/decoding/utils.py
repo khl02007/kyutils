@@ -1,5 +1,4 @@
 import numpy as np
-import trajectory_analysis_tools as tat
 from spikeinterface import BaseSorting
 from numpy.typing import NDArray
 
@@ -186,6 +185,8 @@ def get_ahead_behind(
     track_segment_id,
     head_direction,
 ):
+    import trajectory_analysis_tools as tat
+
     (
         actual_projected_position,
         actual_edges,
