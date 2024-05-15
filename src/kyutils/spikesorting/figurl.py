@@ -20,7 +20,7 @@ def create_curation_json(curation_json: str, labels: dict, merge_groups: list):
 
 
 def create_figurl_spikesorting(
-    recording, sorting, label: str, metrics: List[dict], curation_uri: str = None
+    recording, sorting, label: str, metrics: List[dict] = None, curation_uri: str = None
 ):
     """Creates a figurl to view the sorting results.
 
@@ -32,9 +32,11 @@ def create_figurl_spikesorting(
         Sorting; have to be NpzSortingExtractor
     label : str
         label for this figurl
+    metrics : List[dict], optional
+        See example below for the format of metrics, by default None
     curation_uri : str, optional
         path to json file containing curation information in the GitHub repository, by default None
-        example: "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
+        Example: "gh://LorenFrankLab/sorting-curations/main/khl02007/L5/20230411_r3_20230511_r1/curation.json"
 
     Example
     -------
