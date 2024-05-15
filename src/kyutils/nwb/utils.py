@@ -237,24 +237,18 @@ class TimestampsDataChunkIterator(GenericDataChunkIterator):
 
 def ptp_time_to_datetime(ptp_time, time_zone="America/Los_Angeles"):
     """
-    Convert PTP (Precision Time Protocol) time in nanoseconds to a datetime object.
+    Convert PTP (Precision Time Protocol) time (in seconds) to a datetime object.
     Allows specification of the time zone.
+
+    Parameters
+    ----------
+    ptp_time : float
+        PTP time in seconds.
+    time_zone : str, optional
+        Time zone to convert the time to.
+        Defaults to "America/Los_Angeles".
     """
-    # Ensure the input is a native Python integer
-    ptp_time = int(ptp_time)
-
-    # Convert nanoseconds to seconds (integer part) and remaining nanoseconds
-    seconds = ptp_time // 1_000_000_000
-    nanoseconds = ptp_time % 1_000_000_000
-
-    # Create a datetime object for the Unix epoch in UTC
-    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
-
-    # Add seconds and nanoseconds to the epoch
-    utc_datetime = epoch + timedelta(seconds=seconds, microseconds=nanoseconds / 1000)
-
-    # Convert to the specified time zone
-    target_time_zone = pytz.timezone(time_zone)
-    local_datetime = utc_datetime.astimezone(target_time_zone)
+    timezone = pytz.timezone("America/Los_Angeles")
+    local_datetime = datetime.fromtimestamp(ptp_time, timezone)
 
     return local_datetime
