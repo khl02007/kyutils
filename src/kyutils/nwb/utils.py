@@ -248,7 +248,7 @@ def ptp_time_to_datetime(ptp_time, time_zone="America/Los_Angeles"):
         Time zone to convert the time to.
         Defaults to "America/Los_Angeles".
     """
-    timezone = pytz.timezone("America/Los_Angeles")
+    timezone = pytz.timezone(time_zone)
     local_datetime = datetime.fromtimestamp(ptp_time, timezone)
 
     return local_datetime
