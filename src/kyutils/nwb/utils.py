@@ -120,7 +120,7 @@ class TimestampsExtractor(BaseRecording):
         sampling_frequency=30e3,
     ):
         time = readTrodesExtractedDataFile(file_path)
-        dtype = time["data"]["systime"].dtype
+        dtype = np.float64
 
         BaseRecording.__init__(self, sampling_frequency, channel_ids=[0], dtype=dtype)
 
