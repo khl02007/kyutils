@@ -10,6 +10,7 @@ from spikeinterface.core import BaseRecording, BaseRecordingSegment
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
 
+# copied from neuroconv
 class SpikeInterfaceRecordingDataChunkIterator(GenericDataChunkIterator):
     """DataChunkIterator specifically for use on RecordingExtractor objects."""
 
@@ -30,8 +31,8 @@ class SpikeInterfaceRecordingDataChunkIterator(GenericDataChunkIterator):
 
         Parameters
         ----------
-        recording : si.BaseRecording
-            The SpikeInterfaceRecording object which handles the data access.
+        recording : SpikeInterfaceRecording
+            The SpikeInterfaceRecording object (RecordingExtractor or BaseRecording) which handles the data access.
         segment_index : int, optional
             The recording segment to iterate on.
             Defaults to 0.
@@ -76,6 +77,22 @@ class SpikeInterfaceRecordingDataChunkIterator(GenericDataChunkIterator):
             display_progress=display_progress,
             progress_bar_options=progress_bar_options,
         )
+
+    def _get_default_chunk_shape(self, chunk_mb: float = 10.0) -> Tuple[int, int]:
+        assert chunk_mb > 0, f"chunk_mb ({chunk_mb}) must be greater than zero!"
+
+        chunk_channels = min(
+            self.recording.get_num_channels(),
+            64,  # from https://github.com/flatironinstitute/neurosift/issues/52#issuecomment-1671405249
+        )
+        chunk_frames = min(
+            self.recording.get_num_frames(segment_index=self.segment_index),
+            int(
+                chunk_mb * 1e6 / (self.recording.get_dtype().itemsize * chunk_channels)
+            ),
+        )
+
+        return (chunk_frames, chunk_channels)
 
     def _get_data(self, selection: Tuple[slice]) -> Iterable:
         return self.recording.get_traces(
