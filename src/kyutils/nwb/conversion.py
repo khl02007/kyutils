@@ -191,9 +191,16 @@ def convert_to_nwb(
 
 
 def compare_binary_to_nwb(
-    dat_path, nwb_path, target_channel_id=0, frames_to_compare=3000
+    nwb_path,
+    data_path,
+    epoch_list,
+    probe_types,
+    stereotaxic_coordinates,
+    target_channel_id=3,
+    start_frame=3000,
+    end_frame=30000,
 ):
-    """Compare traces from binary recording to NWB recording for a 128ch NET EBL probe.
+    """Compare voltage traces of a recording in binary vs. NWB format.
 
     Parameters
     ----------
@@ -206,16 +213,9 @@ def compare_binary_to_nwb(
     frames_to_compare : int, optional
         number of first N frames to load and compare, by default 3000
     """
-    recording_dat = si.BinaryRecordingExtractor(
-        dat_path,
-        sampling_frequency=30e3,
-        dtype=np.int16,
-        num_channels=128,
-        gain_to_uV=0.19500000000000001,
-        offset_to_uV=0,
-        is_filtered=False,
+    recording_dat = get_binary_recording(
+        data_path, epoch_list, probe_types, stereotaxic_coordinates
     )
-    recording_dat = recording_dat.set_probe(get_Rice_EBL_128ch_1s())
     recording_nwb = si.read_nwb_recording(nwb_path)
 
     if type(target_channel_id) is int:
@@ -235,7 +235,7 @@ def compare_binary_to_nwb(
         np.all(recording_nwb.get_channel_locations() == target_channel_loc, axis=1)
     )[0]
     target_channel_id_nwb = recording_nwb.get_channel_ids()[target_channel_idx_nwb]
-    target_channel_loc_nwb = recording_dat.get_channel_locations()[
+    target_channel_loc_nwb = recording_nwb.get_channel_locations()[
         target_channel_idx_nwb
     ]
 
@@ -247,18 +247,133 @@ def compare_binary_to_nwb(
     )
 
     traces_dat = recording_dat.get_traces(
-        end_frame=frames_to_compare, channel_ids=target_channel_id, return_scaled=True
+        start_frame=start_frame,
+        end_frame=end_frame,
+        channel_ids=target_channel_id,
+        return_scaled=True,
     )
     traces_nwb = recording_nwb.get_traces(
-        end_frame=frames_to_compare,
+        start_frame=start_frame,
+        end_frame=end_frame,
         channel_ids=target_channel_id_nwb,
         return_scaled=True,
     )
 
-    plt.plot(traces_dat)
-    plt.plot(traces_nwb)
-    plt.show()
+    t = np.arange(start_frame, end_frame)
+
+    fig, ax = plt.subplots()
+    ax.plot(t, traces_dat, label="binary")
+    ax.plot(t, traces_nwb, label="nwb")
+    ax.legend()
+    ax.set_ylabel("Voltage ($\mu$V)")
+    ax.set_xlabel("Time (samples)")
 
     print(
         f"Do the values agree to within 1 microV? {np.allclose(traces_dat, traces_nwb, atol=1)}"
     )
+
+
+def get_binary_recording(
+    data_path,
+    epoch_list,
+    probe_types,
+    stereotaxic_coordinates,
+    sampling_rate=30e3,
+    gain_to_uV=0.19500000000000001,
+):
+    """Returns a spikeinterface BinaryRecordingExtractor for a given day of recording.
+    - Concatenates the recordings of all epochs in `epoch_list` (in order)
+    - Creates a probeinterface.probegroup using stereotaxic coordinates to infer distance
+    - Assumes that the rec file has been converted to int16 binary with trodesexport
+    - Assumes the data_path is structured as follows:
+        datapath
+        |
+        ---r1
+        |  |
+        |  ---r1.rec
+        |  ---r1.kilosort
+        |     |
+        |     ---r1.group0.dat
+        ----r2
+            |
+            ----r2.rec
+        ...
+
+    Parameters
+    ----------
+    data_path : str
+        path to data
+    epoch_list : list
+        name of the epochs, should be in order
+        example: epoch_list = ['s1', 'r1', 's2', 'r2', 's3', 'r3', 's4']
+    probe_types : list
+        list of probes used; must be in order of left to right
+        example: probe_types = ['livermore20', 'livermore15', 'livermore20', 'livermore15']
+    stereotaxic_coordinates : list, (n, 3)
+        AP, ML, DV coordinates in microns
+        example: stereotaxic_coordinates = [[8000.0, -3000.0, 2000.0],
+                                            [4000.0, -2000.0, 2800.0],
+                                            [4000.0, 2000.0, 2800.0],
+                                            [8000.0, 3000.0, 2000.0]]
+    sampling_rate : float, default: 30e3
+    gain_to_uV : float, default: 0.19500000000000001
+
+    Returns
+    -------
+    recording : si.Recording
+        binary recordings that have been concatenated and with probegroup attached
+    """
+
+    shift = [[0, 0]]
+    for i in range(len(probe_types) - 1):
+        shift.append(
+            [
+                np.sqrt(
+                    (stereotaxic_coordinates[i][0] - stereotaxic_coordinates[i + 1][0])
+                    ** 2
+                    + (
+                        stereotaxic_coordinates[i][1]
+                        - stereotaxic_coordinates[i + 1][1]
+                    )
+                    ** 2
+                ),
+                stereotaxic_coordinates[i][2] - stereotaxic_coordinates[i + 1][2],
+            ]
+        )
+
+    # Make probeinterface probegroup
+    probegroup = pi.ProbeGroup()
+    for probe_idx, probe_type in enumerate(probe_types):
+        if probe_type == "livermore20":
+            probegroup.add_probe(
+                get_Livermore_20um(
+                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                )
+            )
+        elif probe_type == "livermore15":
+            probegroup.add_probe(
+                get_Livermore_15um(
+                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                )
+            )
+
+    recording_list = []
+    for epoch in epoch_list:
+        recording_list.append(
+            si.BinaryRecordingExtractor(
+                str(
+                    data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
+                ),
+                sampling_frequency=sampling_rate,
+                dtype=np.int16,
+                num_channels=int(len(probe_types) * 128),
+                gain_to_uV=gain_to_uV,
+                offset_to_uV=0,
+                is_filtered=False,
+            )
+        )
+
+    recording = si.concatenate_recordings(recording_list)
+    recording = recording.set_probegroup(probegroup)
+
+    return recording
