@@ -327,7 +327,7 @@ def get_binary_recording(
 
     accepted_probe_types = ["livermore20", "livermore15", "rice-ebl"]
     assert not all(
-        probe_type in probe_types for accepted_probe_type in accepted_probe_types
+        probe_type in accepted_probe_types for probe_type in probe_types
     ), print("unknown probe type")
 
     recording_list = []
