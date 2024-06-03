@@ -390,7 +390,7 @@ def get_binary_recording(
         recording = recording.set_probegroup(probegroup)
     else:
         print(f"Recording has one probe")
-        probe_type = probe_type[0]
+        probe_type = probe_types[0]
         if probe_type == "livermore20":
             probe = get_Livermore_20um(order=0, shift=np.sum(shift[0], axis=0))
         elif probe_type == "livermore15":
