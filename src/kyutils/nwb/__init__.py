@@ -3,3 +3,4 @@ from .utils import (
     TimestampsDataChunkIterator,
     TimestampsExtractor,
 )
+from .conversion import compare_binary_to_nwb

@@ -361,6 +361,12 @@ def get_binary_recording(
                     order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
                 )
             )
+        elif probe_type == "rice-ebl":
+            probegroup.add_probe(
+                get_Rice_EBL_128ch_1s(
+                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                )
+            )
 
     recording_list = []
     for epoch in epoch_list:
