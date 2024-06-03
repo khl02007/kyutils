@@ -344,7 +344,7 @@ def get_binary_recording(
         recording_path = (
             data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
         )
-        if not recording_path.exists:
+        if not recording_path.exists():
             # recording_path = (
             #     data_path
             #     / epoch
