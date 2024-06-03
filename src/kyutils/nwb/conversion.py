@@ -10,6 +10,7 @@ from pynwb import NWBHDF5IO, NWBFile
 from pynwb.ecephys import ElectricalSeries
 from pynwb.file import Subject
 
+from pathlib import Path
 from ..probe.generate_probe import (
     get_Livermore_20um,
     get_Livermore_15um,
@@ -331,13 +332,32 @@ def get_binary_recording(
         "unknown probe type"
     )
 
+    if isinstance(data_path, str):
+        data_path = Path(data_path)
+
+    parts = data_path.parts
+    date = parts[-1]
+    animal_name = parts[-2]
+
     recording_list = []
     for epoch in epoch_list:
+        recording_path = (
+            data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
+        )
+        if not recording_path.exists:
+            # recording_path = (
+            #     data_path
+            #     / epoch
+            #     / f"{date}_{animal_name}_0{epoch_list.index(epoch)+1}_{epoch}.rec"
+            # )
+            prefix = f"{date}_{animal_name}_0{epoch_list.index(epoch)+1}_{epoch}"
+            recording_path = (
+                data_path / epoch / f"{prefix}.kilosort" / f"{prefix}.group0.dat"
+            )
+
         recording_list.append(
             si.BinaryRecordingExtractor(
-                str(
-                    data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
-                ),
+                recording_path,
                 sampling_frequency=sampling_rate,
                 dtype=np.int16,
                 num_channels=int(len(probe_types) * 128),
