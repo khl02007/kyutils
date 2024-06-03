@@ -308,6 +308,7 @@ def get_binary_recording(
         example: epoch_list = ['s1', 'r1', 's2', 'r2', 's3', 'r3', 's4']
     probe_types : list
         list of probes used; must be in order of left to right
+        possible probe types: 'livermore20', 'livermore15', 'rice-ebl'
         example: probe_types = ['livermore20', 'livermore15', 'livermore20', 'livermore15']
     stereotaxic_coordinates : list, (n, 3)
         AP, ML, DV coordinates in microns
@@ -325,21 +326,25 @@ def get_binary_recording(
     """
 
     shift = [[0, 0]]
-    for i in range(len(probe_types) - 1):
-        shift.append(
-            [
-                np.sqrt(
-                    (stereotaxic_coordinates[i][0] - stereotaxic_coordinates[i + 1][0])
-                    ** 2
-                    + (
-                        stereotaxic_coordinates[i][1]
-                        - stereotaxic_coordinates[i + 1][1]
-                    )
-                    ** 2
-                ),
-                stereotaxic_coordinates[i][2] - stereotaxic_coordinates[i + 1][2],
-            ]
-        )
+    if len(probe_types) > 1:
+        for i in range(len(probe_types) - 1):
+            shift.append(
+                [
+                    np.sqrt(
+                        (
+                            stereotaxic_coordinates[i][0]
+                            - stereotaxic_coordinates[i + 1][0]
+                        )
+                        ** 2
+                        + (
+                            stereotaxic_coordinates[i][1]
+                            - stereotaxic_coordinates[i + 1][1]
+                        )
+                        ** 2
+                    ),
+                    stereotaxic_coordinates[i][2] - stereotaxic_coordinates[i + 1][2],
+                ]
+            )
 
     # Make probeinterface probegroup
     probegroup = pi.ProbeGroup()
