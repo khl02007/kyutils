@@ -325,6 +325,11 @@ def get_binary_recording(
         binary recordings that have been concatenated and with probegroup attached
     """
 
+    accepted_probe_types = ["livermore20", "livermore15", "rice-ebl"]
+    assert not all(
+        probe_type in probe_types for accepted_probe_type in accepted_probe_types
+    ), print("unknown probe type")
+
     recording_list = []
     for epoch in epoch_list:
         recording_list.append(
