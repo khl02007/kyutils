@@ -397,11 +397,11 @@ def get_binary_recording(
         print(f"Recording has one probe")
         probe_type = probe_types[0]
         if probe_type == "livermore20":
-            probe = get_Livermore_20um(order=0, shift=np.sum(shift[0], axis=0))
+            probe = get_Livermore_20um(order=0, shift=[0, 0])
         elif probe_type == "livermore15":
-            probe = get_Livermore_15um(order=0, shift=np.sum(shift[0], axis=0))
+            probe = get_Livermore_15um(order=0, shift=[0, 0])
         elif probe_type == "rice-ebl":
-            probe = get_Rice_EBL_128ch_1s(order=0, shift=np.sum(shift[0], axis=0))
+            probe = get_Rice_EBL_128ch_1s(order=0, shift=[0, 0])
         recording = recording.set_probe(probe)
 
     return recording
