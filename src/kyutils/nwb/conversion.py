@@ -325,8 +325,27 @@ def get_binary_recording(
         binary recordings that have been concatenated and with probegroup attached
     """
 
+    recording_list = []
+    for epoch in epoch_list:
+        recording_list.append(
+            si.BinaryRecordingExtractor(
+                str(
+                    data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
+                ),
+                sampling_frequency=sampling_rate,
+                dtype=np.int16,
+                num_channels=int(len(probe_types) * 128),
+                gain_to_uV=gain_to_uV,
+                offset_to_uV=0,
+                is_filtered=False,
+            )
+        )
+
+    recording = si.concatenate_recordings(recording_list)
+
     shift = [[0, 0]]
     if len(probe_types) > 1:
+        print(f"Recording has {len(probe_types)} probes")
         for i in range(len(probe_types) - 1):
             shift.append(
                 [
@@ -346,45 +365,38 @@ def get_binary_recording(
                 ]
             )
 
-    # Make probeinterface probegroup
-    probegroup = pi.ProbeGroup()
-    for probe_idx, probe_type in enumerate(probe_types):
+        # Make probeinterface probegroup
+        probegroup = pi.ProbeGroup()
+        for probe_idx, probe_type in enumerate(probe_types):
+            if probe_type == "livermore20":
+                probegroup.add_probe(
+                    get_Livermore_20um(
+                        order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                    )
+                )
+            elif probe_type == "livermore15":
+                probegroup.add_probe(
+                    get_Livermore_15um(
+                        order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                    )
+                )
+            elif probe_type == "rice-ebl":
+                probegroup.add_probe(
+                    get_Rice_EBL_128ch_1s(
+                        order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
+                    )
+                )
+
+        recording = recording.set_probegroup(probegroup)
+    else:
+        print(f"Recording has one probe")
+        probe_type = probe_type[0]
         if probe_type == "livermore20":
-            probegroup.add_probe(
-                get_Livermore_20um(
-                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
-                )
-            )
+            probe = get_Livermore_20um(order=0, shift=np.sum(shift[0], axis=0))
         elif probe_type == "livermore15":
-            probegroup.add_probe(
-                get_Livermore_15um(
-                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
-                )
-            )
+            probe = get_Livermore_15um(order=0, shift=np.sum(shift[0], axis=0))
         elif probe_type == "rice-ebl":
-            probegroup.add_probe(
-                get_Rice_EBL_128ch_1s(
-                    order=probe_idx, shift=np.sum(shift[: probe_idx + 1], axis=0)
-                )
-            )
-
-    recording_list = []
-    for epoch in epoch_list:
-        recording_list.append(
-            si.BinaryRecordingExtractor(
-                str(
-                    data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
-                ),
-                sampling_frequency=sampling_rate,
-                dtype=np.int16,
-                num_channels=int(len(probe_types) * 128),
-                gain_to_uV=gain_to_uV,
-                offset_to_uV=0,
-                is_filtered=False,
-            )
-        )
-
-    recording = si.concatenate_recordings(recording_list)
-    recording = recording.set_probegroup(probegroup)
+            probe = get_Rice_EBL_128ch_1s(order=0, shift=np.sum(shift[0], axis=0))
+        recording = recording.set_probe(probe)
 
     return recording
