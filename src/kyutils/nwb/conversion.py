@@ -271,6 +271,7 @@ def compare_binary_to_nwb(
     print(
         f"Do the values agree to within 1 microV? {np.allclose(traces_dat, traces_nwb, atol=1)}"
     )
+    return np.allclose(traces_dat, traces_nwb, atol=1)
 
 
 def get_binary_recording(
