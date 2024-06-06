@@ -4,9 +4,7 @@ import pickle
 import spikeinterface as si
 
 
-def get_spikes_position(
-    trial_name: str, unit_id, waveform_extractor: si.WaveformExtractor
-):
+def get_spikes_position(trial_name: str, unit_id, waveform_extractor):
     path_to_position = f"/nimbus/kyu/L10/20231005/dlc/L10-20231005-phil-2023-10-25/videos/{trial_name}DLC_resnet50_L10-20231005Oct25shuffle1_500000_filtered.h5"
     df = pd.read_hdf(path_to_position)
 

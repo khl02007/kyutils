@@ -5,9 +5,7 @@ import json
 import numpy as np
 
 
-def compute_standard_metrics(
-    waveform_extractor: si.WaveformExtractor, path_to_json: str
-):
+def compute_standard_metrics(waveform_extractor, path_to_json: str):
     """Computes ISI violation, SNR, nearest neighbor isolation, and nearest neighbor noise overlap metrics.
 
     Parameters
