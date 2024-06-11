@@ -133,22 +133,28 @@ def plot_place_field(
     ax : matplotlib.axes
         The axis object for the plot
     """
+    # don't include any periods where the position is np.nan
     t_position = t_position[~np.isnan(position).any(axis=1)]
     position = position[~np.isnan(position).any(axis=1)]
 
+    sampling_rate = np.mean(np.diff(t_position))
     if ax is None:
         fig, ax = plt.subplots()
     ind = np.searchsorted(t_position, spike_times)
     ind = ind[ind < len(position)]
     spike_position = position[ind]
 
+    #
     binned_spike, binned_pos = bin_spikes_into_position(
         spike_position, position, bin_size
     )
 
+    # Get spikes / (temporal) samples and rotate
     array = np.rot90(binned_spike / binned_pos, 1)
     array_no_nan = np.nan_to_num(array)
-    array_no_nan = array_no_nan / (spike_times[-1] - spike_times[0])
+
+    # Convert to spikes / second
+    array_no_nan = array_no_nan * sampling_rate
 
     # Apply Gaussian smoothing
     smoothed_array = gaussian_filter(array_no_nan, sigma)
