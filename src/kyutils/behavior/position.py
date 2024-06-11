@@ -150,11 +150,11 @@ def plot_place_field(
     array_no_nan = np.nan_to_num(array)
     array_no_nan = array_no_nan / (spike_times[-1] - spike_times[0])
 
-    if max_firing_rate is None:
-        max_firing_rate = np.max(array_no_nan)
-
     # Apply Gaussian smoothing
     smoothed_array = gaussian_filter(array_no_nan, sigma)
+
+    if max_firing_rate is None:
+        max_firing_rate = np.max(smoothed_array)
 
     # Put NaNs back to their original positions
     smoothed_array_with_nan = np.where(np.isnan(array), np.nan, smoothed_array)
