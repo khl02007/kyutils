@@ -127,6 +127,9 @@ def plot_place_field(
     ax : matplotlib.axes
         The axis object for the plot
     """
+    t_position = t_position[~np.isnan(position).any(axis=1)]
+    position = position[~np.isnan(position).any(axis=1)]
+
     if ax is None:
         fig, ax = plt.subplots()
     ind = np.searchsorted(t_position, spike_times)
