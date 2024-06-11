@@ -103,7 +103,13 @@ def bin_spikes_into_position(spike_position, position, bin_size):
 
 
 def plot_place_field(
-    spike_times, position, t_position, bin_size=[10, 10], sigma=1, ax=None
+    spike_times,
+    position,
+    t_position,
+    bin_size=[10, 10],
+    sigma=1,
+    max_firing_rate=None,
+    ax=None,
 ):
     """Plots occupancy normalized place field
 
@@ -142,6 +148,10 @@ def plot_place_field(
 
     array = np.rot90(binned_spike / binned_pos, 1)
     array_no_nan = np.nan_to_num(array)
+    array_no_nan = array_no_nan / (spike_times[-1] - spike_times[0])
+
+    if max_firing_rate is None:
+        max_firing_rate = np.max(array_no_nan)
 
     # Apply Gaussian smoothing
     smoothed_array = gaussian_filter(array_no_nan, sigma)
@@ -149,8 +159,13 @@ def plot_place_field(
     # Put NaNs back to their original positions
     smoothed_array_with_nan = np.where(np.isnan(array), np.nan, smoothed_array)
 
-    ax.imshow(smoothed_array_with_nan, cmap="hot", interpolation="nearest")
-    return ax
+    ax.imshow(
+        smoothed_array_with_nan,
+        cmap="hot",
+        interpolation="nearest",
+        vmax=max_firing_rate,
+    )
+    return ax, max_firing_rate
 
 
 def find_file_with_extension(directory, extension):
