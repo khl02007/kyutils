@@ -168,7 +168,7 @@ def plot_place_field(
 
     ax.imshow(
         smoothed_array_with_nan,
-        cmap="hot",
+        cmap="viridis",
         interpolation="nearest",
         vmax=max_firing_rate,
     )
