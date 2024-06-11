@@ -137,7 +137,8 @@ def plot_place_field(
     t_position = t_position[~np.isnan(position).any(axis=1)]
     position = position[~np.isnan(position).any(axis=1)]
 
-    sampling_rate = np.mean(np.diff(t_position))
+    sampling_rate = 1 / np.mean(np.diff(t_position))
+
     if ax is None:
         fig, ax = plt.subplots()
     ind = np.searchsorted(t_position, spike_times)
