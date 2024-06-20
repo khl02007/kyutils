@@ -22,6 +22,6 @@ from .spikesorting.waveform import (
 )
 
 from .nwb.conversion import convert_to_nwb
-from .nwb.utils import ptp_time_to_datetime
+from .nwb.utils import ptp_time_to_datetime, get_epoch_list
 
 from .decoding import get_spike_indicator, get_ahead_behind

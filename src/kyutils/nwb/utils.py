@@ -269,3 +269,59 @@ def ptp_time_to_datetime(ptp_time, time_zone="America/Los_Angeles"):
     local_datetime = datetime.fromtimestamp(ptp_time, timezone)
 
     return local_datetime
+
+
+def get_epoch_list(num_sleep_epochs, num_run_epochs):
+    """Given the number of sleep and run epochs, returns the name of the epochs
+    in the form of {epoch_id}_{epoch_type}{epoch_type_index}.
+    Example: 01_r1 if the first epoch is a run epoch
+    Assumes that sleep and run epochs alternate and the epoch type with more epochs comes first.
+
+    Parameters
+    ----------
+    num_sleep_epochs : int
+        number of sleep epochs
+    num_run_epochs : int
+        number of run epochs
+
+    Returns
+    -------
+    epoch_list : list
+        list of epoch names
+    run_epoch_list : list
+    """
+    assert (
+        np.abs(num_sleep_epochs - num_run_epochs) == 1
+    ), "The run and sleep epochs must alternate."
+    sleep_epoch_tags = [f"s{i+1}" for i in range(num_sleep_epochs)]
+    run_epoch_tags = [f"r{i+1}" for i in range(num_run_epochs)]
+    if num_sleep_epochs > num_run_epochs:
+        epoch_list = []
+        for i in range(num_sleep_epochs + num_run_epochs):
+            if i % 2 == 0:
+                if i < 9:
+                    epoch_list.append(f"0{i+1}_{sleep_epoch_tags[i//2]}")
+                else:
+                    epoch_list.append(f"{i+1}_{sleep_epoch_tags[i//2]}")
+            else:
+                if i < 9:
+                    epoch_list.append(f"0{i+1}_{run_epoch_tags[i//2]}")
+                else:
+                    epoch_list.append(f"{i+1}_{run_epoch_tags[i//2]}")
+        run_epoch_list = epoch_list[1::2]
+    else:
+        epoch_list = []
+        for i in range(num_sleep_epochs + num_run_epochs):
+            if i % 2 == 0:
+                if i < 9:
+                    epoch_list.append(f"0{i+1}_{run_epoch_tags[i//2]}")
+                else:
+                    epoch_list.append(f"{i+1}_{run_epoch_tags[i//2]}")
+            else:
+                if i < 9:
+                    epoch_list.append(f"0{i+1}_{sleep_epoch_tags[i//2]}")
+                else:
+                    epoch_list.append(f"{i+1}_{sleep_epoch_tags[i//2]}")
+        run_epoch_list = epoch_list[::2]
+
+    return epoch_list, run_epoch_list
