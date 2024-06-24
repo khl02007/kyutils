@@ -283,36 +283,37 @@ def get_binary_recording(
     sampling_rate=30e3,
     gain_to_uV=0.19500000000000001,
 ):
-    """Returns a spikeinterface BinaryRecordingExtractor for a given day of recording.
+    """Returns a spikeinterface BinaryRecordingExtractor for a given day of recording taken with 128 ch probes.
     - Concatenates the recordings of all epochs in `epoch_list` (in order)
     - Creates a probeinterface.probegroup using stereotaxic coordinates to infer distance
     - Assumes that the rec file has been converted to int16 binary with trodesexport
     - Assumes the data_path is structured as follows:
-        datapath
+        data_path
         |
-        ---r1
+        ---20240611_L14_01_r1
         |  |
-        |  ---r1.rec
-        |  ---r1.kilosort
+        |  ---20240611_L14_01_r1.rec
+        |  ---20240611_L14_01_r1.kilosort
         |     |
-        |     ---r1.group0.dat
-        ----r2
+        |     ---20240611_L14_01_r1.group0.dat
+        ----20240611_L14_02_s1
             |
-            ----r2.rec
+            ----20240611_L14_02_s1.rec
         ...
 
     Parameters
     ----------
     data_path : str
-        path to data
+        path to data; has to end with /animal_name/date/
+        example: /path/to/data/L14/20240611/
     epoch_list : list
         name of the epochs, should be in order
-        example: epoch_list = ['s1', 'r1', 's2', 'r2', 's3', 'r3', 's4']
+        example: epoch_list = ['01_s1', '02_r1', '03_s2', '04_r2', '05_s3', '06_r3', '07_s4']
     probe_types : list
         list of probes used; must be in order of left to right
         possible probe types: 'livermore20', 'livermore15', 'rice-ebl'
         example: probe_types = ['livermore20', 'livermore15', 'livermore20', 'livermore15']
-    stereotaxic_coordinates : list, (n, 3)
+    stereotaxic_coordinates : List[List], (n, 3)
         AP, ML, DV coordinates in microns
         example: stereotaxic_coordinates = [[8000.0, -3000.0, 2000.0],
                                             [4000.0, -2000.0, 2800.0],
@@ -329,7 +330,7 @@ def get_binary_recording(
 
     accepted_probe_types = ["livermore20", "livermore15", "rice-ebl"]
     assert all(probe_type in accepted_probe_types for probe_type in probe_types), print(
-        "unknown probe type"
+        "`probe_types` has at least one unknown probe type."
     )
 
     if isinstance(data_path, str):
@@ -345,14 +346,16 @@ def get_binary_recording(
             data_path / epoch / (epoch + ".kilosort") / (epoch + ".group0.dat")
         )
         if not recording_path.exists():
-            # recording_path = (
-            #     data_path
-            #     / epoch
-            #     / f"{date}_{animal_name}_0{epoch_list.index(epoch)+1}_{epoch}.rec"
-            # )
             prefix = f"{date}_{animal_name}_0{epoch_list.index(epoch)+1}_{epoch}"
             recording_path = (
                 data_path / epoch / f"{prefix}.kilosort" / f"{prefix}.group0.dat"
+            )
+        if not recording_path.exists():
+            recording_path = (
+                data_path
+                / f"{date}_{animal_name}_{epoch}"
+                / f"{date}_{animal_name}_{epoch}.kilosort"
+                / f"{date}_{animal_name}_{epoch}.group0.dat"
             )
 
         recording_list.append(
