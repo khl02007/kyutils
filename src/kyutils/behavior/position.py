@@ -4,6 +4,7 @@ from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 import pandas as pd
+import position_tools as pt
 
 
 def load_position_from_rec(rec_directory):
@@ -450,19 +451,66 @@ def linearize_position(
     return position_interp
 
 
-def interpolate_position(position_df, t_position, time):
-    import scipy
+def denoise_position(
+    position_cm,
+    t_position_s=None,
+    position_sampling_rate=1,
+    max_plausible_speed_cm_s=(100.0,),
+    speed_smoothing_std_dev=0.100,
+    frames_to_pad=10,
+    plot=False,
+):
+    """Identifies outlier frames based on the velocity,
+    converts these frames (and some frames before and after) to nan,
+    and interpolates over them linearly.
 
-    f_pos = scipy.interpolate.interp1d(
-        t_position,
-        position_df["linear_position"],
-        axis=0,
-        bounds_error=False,
-        kind="linear",
+    Parameters
+    ----------
+    position_cm : array_like, (n,2)
+        position in cm
+    t_position_s: array_like, (n,), optional
+        timestamps for the position in seconds. If None, will just use sample index as timestamps. by default None
+    max_plausible_speed_cm_s : int, optional
+        if speed is higher than this then the frame will be converted to nan, by default 100
+    speed_smoothing_std_dev : int, optional
+        std dev of the gaussian by which to smooth the speed, same unit as time
+    frames_to_pad : int, optional
+        number of frames before and after the outlier frames to convert to nan, by default 10
+    plot : bool, optional
+        whether to plot the position before and after denoising, by default False
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+
+    speed = pt.get_speed(
+        position_cm,
+        t_position_s,
+        sigma=speed_smoothing_std_dev,
+        sampling_frequency=position_sampling_rate,
     )
-    position_interp = f_pos(time)
 
-    return position_interp, time
+    frames_speed_is_too_fast = np.nonzero(
+        np.insert(np.abs(speed) > max_plausible_speed_cm_s, 0, False)
+    )[0]
+    for i in frames_speed_is_too_fast:
+        position_cm[
+            np.max((0, i - frames_to_pad)) : np.min(
+                (len(position_cm), i + frames_to_pad)
+            ),
+            :,
+        ] = np.nan
+
+    position_interp = pt.interpolate_nan(position_cm)
+    if plot:
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax[0].plot(position_cm[:, 0], position_cm[:, 1])
+        ax[1].plot(position_interp[:, 0], position_interp[:, 1])
+        ax[0].set_aspect("equal")
+        ax[1].set_aspect("equal")
+    return position_interp
 
 
 def plot_place_fields_heatmap(place_fields, sorted_indices=None, ax=None):
