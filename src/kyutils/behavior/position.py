@@ -505,7 +505,7 @@ def denoise_position(
 
     position_interp = pt.interpolate_nan(position_cm)
     if plot:
-        fig, ax = plt.subplots(figsize=(6, 6))
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(6, 6))
         ax[0].plot(position_cm[:, 0], position_cm[:, 1])
         ax[1].plot(position_interp[:, 0], position_interp[:, 1])
         ax[0].set_aspect("equal")
