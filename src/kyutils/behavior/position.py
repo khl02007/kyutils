@@ -494,6 +494,7 @@ def denoise_position(
     if plot:
         fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(6, 6))
         ax[0].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6)
+        ax[2].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6, zorder=1)
 
     frames_speed_is_too_fast = np.nonzero(
         np.insert(np.abs(speed) > max_plausible_speed_cm_s, 0, False)
@@ -509,11 +510,13 @@ def denoise_position(
     position_interp = pt.interpolate_nan(position_cm, t_position_s)
     if plot:
         ax[1].plot(position_interp[:, 0], position_interp[:, 1], "k")
-        ax[2].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6, zorder=1)
+
         ax[2].plot(position_interp[:, 0], position_interp[:, 1], "k", zorder=2)
 
         ax[0].set_aspect("equal")
         ax[1].set_aspect("equal")
+        ax[2].set_aspect("equal")
+
         ax[0].set_title("before interpolation")
         ax[1].set_title("after interpolation")
         ax[2].set_title("overlay")
@@ -537,6 +540,7 @@ def denoise_position(
 
         ax[1].set_xlim(x_min, x_max)
         ax[1].set_ylim(y_min, y_max)
+
         ax[2].set_xlim(x_min, x_max)
         ax[2].set_ylim(y_min, y_max)
 
