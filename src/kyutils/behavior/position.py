@@ -454,9 +454,9 @@ def linearize_position(
 def denoise_position(
     position_cm,
     t_position_s=None,
-    position_sampling_rate=1,
-    max_plausible_speed_cm_s=(100.0,),
-    speed_smoothing_std_dev=0.100,
+    position_sampling_rate=30,
+    max_plausible_speed_cm_s=100.0,
+    speed_smoothing_std_dev=0.00100,
     frames_to_pad=10,
     plot=False,
 ):
@@ -491,6 +491,9 @@ def denoise_position(
         sigma=speed_smoothing_std_dev,
         sampling_frequency=position_sampling_rate,
     )
+    if plot:
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(6, 6))
+        ax[0].plot(position_cm[:, 0], position_cm[:, 1])
 
     frames_speed_is_too_fast = np.nonzero(
         np.insert(np.abs(speed) > max_plausible_speed_cm_s, 0, False)
@@ -503,10 +506,8 @@ def denoise_position(
             :,
         ] = np.nan
 
-    position_interp = pt.interpolate_nan(position_cm)
+    position_interp = pt.interpolate_nan(position_cm, t_position_s)
     if plot:
-        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(6, 6))
-        ax[0].plot(position_cm[:, 0], position_cm[:, 1])
         ax[1].plot(position_interp[:, 0], position_interp[:, 1])
         ax[0].set_aspect("equal")
         ax[1].set_aspect("equal")
