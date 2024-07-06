@@ -492,7 +492,7 @@ def denoise_position(
         sampling_frequency=position_sampling_rate,
     )
     if plot:
-        fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(6, 6))
+        fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(12, 6))
         ax[0].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6)
         ax[2].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6, zorder=1)
 
