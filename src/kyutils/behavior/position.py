@@ -492,8 +492,8 @@ def denoise_position(
         sampling_frequency=position_sampling_rate,
     )
     if plot:
-        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(6, 6))
-        ax[0].plot(position_cm[:, 0], position_cm[:, 1])
+        fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(6, 6))
+        ax[0].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6)
 
     frames_speed_is_too_fast = np.nonzero(
         np.insert(np.abs(speed) > max_plausible_speed_cm_s, 0, False)
@@ -508,9 +508,38 @@ def denoise_position(
 
     position_interp = pt.interpolate_nan(position_cm, t_position_s)
     if plot:
-        ax[1].plot(position_interp[:, 0], position_interp[:, 1])
+        ax[1].plot(position_interp[:, 0], position_interp[:, 1], "k")
+        ax[2].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6, zorder=1)
+        ax[2].plot(position_interp[:, 0], position_interp[:, 1], "k", zorder=2)
+
         ax[0].set_aspect("equal")
         ax[1].set_aspect("equal")
+        ax[0].set_title("before interpolation")
+        ax[1].set_title("after interpolation")
+        ax[2].set_title("overlay")
+
+        # Get the limits for both subplots
+        x1_min, x1_max = ax[0].get_xlim()
+        y1_min, y1_max = ax[0].get_ylim()
+
+        x2_min, x2_max = ax[1].get_xlim()
+        y2_min, y2_max = ax[1].get_ylim()
+
+        # Determine the combined limits
+        x_min = min(x1_min, x2_min)
+        x_max = max(x1_max, x2_max)
+        y_min = min(y1_min, y2_min)
+        y_max = max(y1_max, y2_max)
+
+        # Set the same limits for both subplots
+        ax[0].set_xlim(x_min, x_max)
+        ax[0].set_ylim(y_min, y_max)
+
+        ax[1].set_xlim(x_min, x_max)
+        ax[1].set_ylim(y_min, y_max)
+        ax[2].set_xlim(x_min, x_max)
+        ax[2].set_ylim(y_min, y_max)
+
     return position_interp
 
 
