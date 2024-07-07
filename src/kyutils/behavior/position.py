@@ -457,7 +457,7 @@ def denoise_position(
     position_sampling_rate=30,
     max_plausible_speed_cm_s=100.0,
     speed_smoothing_std_dev=0.00100,
-    frames_to_pad=10,
+    frames_to_pad=1,
     plot=False,
 ):
     """Identifies outlier frames based on the velocity,
@@ -481,33 +481,34 @@ def denoise_position(
 
     Returns
     -------
-    _type_
-        _description_
+    position_interp : np.array
+        Interpolated position
     """
+    position = position_cm.copy()
 
     speed = pt.get_speed(
-        position_cm,
+        position,
         t_position_s,
         sigma=speed_smoothing_std_dev,
         sampling_frequency=position_sampling_rate,
     )
+
     if plot:
         fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(12, 6))
-        ax[0].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6)
-        ax[2].plot(position_cm[:, 0], position_cm[:, 1], "k", alpha=0.6, zorder=1)
+        ax[0].plot(position[:, 0], position[:, 1], "k", alpha=0.6)
+        ax[2].plot(position[:, 0], position[:, 1], "k", alpha=0.6, zorder=1)
 
     frames_speed_is_too_fast = np.nonzero(
         np.insert(np.abs(speed) > max_plausible_speed_cm_s, 0, False)
     )[0]
     for i in frames_speed_is_too_fast:
-        position_cm[
-            np.max((0, i - frames_to_pad)) : np.min(
-                (len(position_cm), i + frames_to_pad)
-            ),
+        position[
+            np.max((0, i - frames_to_pad)) : np.min((len(position), i + frames_to_pad)),
             :,
         ] = np.nan
 
-    position_interp = pt.interpolate_nan(position_cm, t_position_s)
+    position_interp = pt.interpolate_nan(position, t_position_s)
+
     if plot:
         ax[1].plot(position_interp[:, 0], position_interp[:, 1], "k")
 
