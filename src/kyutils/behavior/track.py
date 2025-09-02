@@ -6,6 +6,7 @@ from typing import Dict, Iterable, Literal, Optional, Tuple, List
 import numpy as np
 from numpy.typing import NDArray
 from scipy.sparse import coo_matrix, csr_matrix
+from scipy.sparse.csgraph import dijkstra
 
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
