@@ -6,6 +6,7 @@ kyu's utils
 - behavior
   - given the extracted DIO dat files from a SpikeGadgets `rec` file, plots the time course of the animal's decisions in the W-track task and indicates rewarded trials
   - plots place field
+  - figures out the 2d distance by constructing a graph from trajectories
 - nwb
   - basic NWB conversion of ephys data
 - probe
