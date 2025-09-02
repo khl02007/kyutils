@@ -7,6 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
+# Keep this range to avoid 3.12/3.13 on the runner; CI will use 3.11
 python = ">=3.9,<3.12"
 numpy = "^1.26.0"
 matplotlib = "^3.7.2"
@@ -25,9 +26,16 @@ track_linearization = { version = "2.3.1", optional = true }
 ripple_detection = { version = "1.4.0", optional = true }
 
 [tool.poetry.extras]
-figurl = ["kachery-cloud","sortingview"]
-nwb = ["pynwb","hdmf"]
-decoder = ["replay_trajectory_classification", "trajectory_analysis_tools", "position_tools", "track_linearization", "ripple_detection"]
+# MUST use the dependency keys from [tool.poetry.dependencies]
+figurl = ["kachery_cloud", "sortingview"]
+nwb = ["pynwb", "hdmf"]
+decoder = [
+  "replay_trajectory_classification",
+  "trajectory_analysis_tools",
+  "position_tools",
+  "track_linearization",
+  "ripple_detection",
+]
 
 [build-system]
 requires = ["poetry-core"]
