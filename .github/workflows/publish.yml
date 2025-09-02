@@ -8,7 +8,7 @@ name: Publish Python Package
 on:
   workflow_run:
     workflows: ["Black Formatter"]
-    types: 
+    types:
       - completed
 
 jobs:
@@ -16,36 +16,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python 3.x
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-        
-    - name: Install poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+      - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: poetry install
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-    - name: Update last digit of semantic version
-      run: |
-        version=$(poetry version | awk '{print $2}')
-        new_version=$(echo $version | awk -F. -v OFS=. '{$NF++; print}')
-        poetry version $new_version
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Commit and push new version to main
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Bump version to $new_version" -a
-        git push origin main --force
+      - name: Install dependencies
+        run: poetry install
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update last digit of semantic version
+        run: |
+          version=$(poetry version | awk '{print $2}')
+          new_version=$(echo $version | awk -F. -v OFS=. '{$NF++; print}')
+          poetry version $new_version
 
-    - name: Publish package to PyPI
-      run: |
-        poetry publish --build -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+      - name: Commit and push new version to main
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Bump version to $new_version" -a
+          git push origin main --force
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish package to PyPI
+        run: |
+          poetry publish --build -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
