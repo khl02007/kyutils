@@ -3,6 +3,7 @@ from .spikegadgets.trodesconf import (
     create_trodesconf_from_scratch,
     create_trodesconf_from_template,
 )
+from .spikegadgets.reconfig import merge_spike_ntrodes_file
 from .behavior.reward import get_licks_rewards, plot_performance
 from .behavior.position import (
     load_position_from_rec,
