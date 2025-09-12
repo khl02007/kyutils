@@ -426,10 +426,38 @@ def nearest_node_index(
     Returns
     -------
     int
-        Node index into `graph.centers`.
+        Node index into ``graph.centers``.
+
+    Raises
+    ------
+    ValueError
+        If the graph is empty, inputs are non-finite where required, or no node
+        is found within ``max_radius`` for ``mode="grid_expand"``.
     """
     if graph.centers.shape[0] == 0:
         raise ValueError("Graph has no nodes.")
+
+    if mode == "euclidean":
+        # Require finite query; guard against any non-finite centers by masking.
+        if not (np.isfinite(x) and np.isfinite(y)):
+            raise ValueError("x and y must be finite for mode='euclidean'.")
+
+        diffs = graph.centers - np.array([x, y], dtype=float)
+        # Distance squared; set non-finite rows to +inf so they won't win argmin.
+        d2 = np.einsum("ij,ij->i", diffs, diffs)
+        bad = ~np.isfinite(d2)
+        if np.all(bad):
+            raise ValueError("All graph centers are non-finite.")
+        d2[bad] = np.inf
+        return int(np.argmin(d2))
+
+    # The grid-based modes require finite x, y, and positive finite dx, dy.
+    if not (np.isfinite(x) and np.isfinite(y)):
+        raise ValueError("x and y must be finite for grid-based modes.")
+    if not (np.isfinite(graph.dx) and np.isfinite(graph.dy)):
+        raise ValueError("graph.dx and graph.dy must be finite.")
+    if graph.dx <= 0 or graph.dy <= 0:
+        raise ValueError("graph.dx and graph.dy must be positive.")
 
     j = int(np.floor((x - graph.x0) / graph.dx))
     i = int(np.floor((y - graph.y0) / graph.dy))
@@ -440,14 +468,11 @@ def nearest_node_index(
             raise ValueError("Nearest grid location has no node.")
         return idx
 
-    if mode == "euclidean":
-        diffs = graph.centers - np.array([x, y], dtype=float)
-        return int(np.argmin(np.einsum("ij,ij->i", diffs, diffs)))
-
-    # grid_expand
+    # mode == "grid_expand"
     idx = graph.index_of_ij.get((i, j), -1)
     if idx >= 0:
-        return idx
+        return int(idx)
+
     for r in range(1, max_radius + 1):
         ii = np.arange(i - r, i + r + 1, dtype=int)
         jj = np.arange(j - r, j + r + 1, dtype=int)
@@ -466,6 +491,7 @@ def nearest_node_index(
             hit = graph.index_of_ij.get((int(ii_jj[0]), int(ii_jj[1])), -1)
             if hit >= 0:
                 return int(hit)
+
     raise ValueError("No existing node found within max_radius in grid_expand mode.")
 
 
