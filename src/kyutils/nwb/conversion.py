@@ -27,7 +27,213 @@ import matplotlib.pyplot as plt
 from ..spikegadgets.trodesconf import readTrodesExtractedDataFile
 
 
-def convert_to_nwb(
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+convert_nwbs.py
+================
+
+CLI wrapper to run Trodes → NWB conversion for a specific date (YYYYMMDD).
+
+Examples
+--------
+Run a single date:
+
+    python convert_nwbs.py 20240611
+
+Launch multiple dates in separate terminals:
+
+    # terminal 1
+    python convert_nwbs.py 20240611
+
+    # terminal 2
+    python convert_nwbs.py 20240612
+"""
+
+from __future__ import annotations
+
+import argparse
+import logging
+import re
+from pathlib import Path
+from typing import List, Optional
+
+from trodes_to_nwb.convert import create_nwbs
+
+# ── Fixed settings (non-overridable by CLI) ──────────────────────────────────
+HEADER_RECONFIG_PATH = Path("/nimbus/kyu/L14/L14_reconfig.trodesconf")
+CONVERT_VIDEO = True
+
+
+def _validate_date(date_str: str) -> str:
+    """Validate an 8-digit YYYYMMDD string.
+
+    Parameters
+    ----------
+    date_str : str
+        Date string in the form YYYYMMDD.
+
+    Returns
+    -------
+    str
+        The same `date_str` if valid.
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        If the string is not 8 digits.
+    """
+    if not re.fullmatch(r"\d{8}", date_str):
+        raise argparse.ArgumentTypeError(
+            "Date must be 8 digits in the form YYYYMMDD, e.g., 20240611."
+        )
+    return date_str
+
+
+def run_conversion(
+    date: str,
+    base_path: Path,
+    output_dir: Path,
+    device_metadata_paths: Optional[List[Path]],
+    video_directory: Optional[Path],
+    n_workers: int,
+    query_expression: Optional[str],
+) -> None:
+    """Run Trodes → NWB conversion for a single date.
+
+    Parameters
+    ----------
+    date : str
+        Date in YYYYMMDD (e.g., ``"20240611"``).
+    base_path : Path
+        Base directory that contains per-date subfolders
+        (e.g., ``/stelmo/kyu/L14``). The script will look for
+        ``base_path / date`` as the session path.
+    output_dir : Path
+        Directory to write NWB outputs (e.g., ``/stelmo/nwb/raw``).
+        It will be created if it doesn't exist.
+    device_metadata_paths : list of Path or None
+        Optional list of paths to device metadata files.
+    video_directory : Path or None
+        Directory for converted/located video (used since conversion is always on).
+    n_workers : int
+        Number of parallel workers to use inside the converter.
+    query_expression : str or None
+        Optional query expression to filter sessions.
+    """
+    session_path = base_path / date
+
+    logging.info("Session path: %s", session_path)
+    logging.info("Output dir: %s", output_dir)
+    logging.info("Header reconfig (fixed): %s", HEADER_RECONFIG_PATH)
+    logging.info("Convert video (fixed): %s", CONVERT_VIDEO)
+    if CONVERT_VIDEO:
+        logging.info("Video directory: %s", video_directory)
+
+    if not session_path.exists():
+        raise FileNotFoundError(f"Session path not found: {session_path}")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    create_nwbs(
+        path=session_path,
+        output_dir=output_dir,
+        header_reconfig_path=HEADER_RECONFIG_PATH,
+        device_metadata_paths=device_metadata_paths,
+        convert_video=CONVERT_VIDEO,
+        video_directory=str(video_directory) if video_directory else None,
+        n_workers=n_workers,
+        query_expression=query_expression,
+    )
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments.
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description="Trodes → NWB conversion for a specific date (YYYYMMDD)."
+    )
+    parser.add_argument("date", type=_validate_date, help="e.g., 20240611")
+
+    parser.add_argument(
+        "--base-path",
+        type=Path,
+        default=Path("/nimbus/kyu/L14"),
+        help="Base directory containing per-date folders (default: /stelmo/kyu/L14).",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("/stelmo/nwb/raw"),
+        help="Directory for NWB outputs (default: /stelmo/nwb/raw).",
+    )
+    parser.add_argument(
+        "--device-metadata",
+        type=Path,
+        nargs="*",
+        default=None,
+        help="Optional list of device metadata file paths.",
+    )
+    parser.add_argument(
+        "--video-directory",
+        type=Path,
+        default=Path("/stelmo/nwb/video"),
+        help="Video directory (conversion is always enabled).",
+    )
+    parser.add_argument(
+        "--n-workers",
+        type=int,
+        default=1,
+        help="Number of converter workers (default: 1).",
+    )
+    parser.add_argument(
+        "--query-expression",
+        type=str,
+        default=None,
+        help="Optional query expression to filter sessions.",
+    )
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        default="INFO",
+        choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+        help="Logging verbosity (default: INFO).",
+    )
+    return parser.parse_args()
+
+
+# def main() -> None:
+#     """Entry point."""
+#     args = parse_args()
+#     logging.basicConfig(
+#         level=getattr(logging, args.log_level.upper()),
+#         format="%(asctime)s %(levelname)s %(message)s",
+#     )
+
+#     run_conversion(
+#         date=args.date,
+#         base_path=args.base_path,
+#         output_dir=args.output_dir,
+#         device_metadata_paths=(
+#             list(args.device_metadata) if args.device_metadata else None
+#         ),
+#         video_directory=args.video_directory,
+#         n_workers=args.n_workers,
+#         query_expression=args.query_expression,
+#     )
+
+
+# if __name__ == "__main__":
+#     main()
+
+
+def convert_to_nwb_minimal(
     dat_in_path: str, time_in_path: str, nwb_out_path: str, session_id: str = "1"
 ):
     """Minimal NWB conversion code for a four-probe (512 ch) implanted animal (e.g. L10) sampled at 20kHz.
