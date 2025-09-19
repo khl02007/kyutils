@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 from datetime import datetime
 from uuid import uuid4
 
@@ -51,7 +54,6 @@ Launch multiple dates in separate terminals:
     python convert_nwbs.py 20240612
 """
 
-from __future__ import annotations
 
 import argparse
 import logging
