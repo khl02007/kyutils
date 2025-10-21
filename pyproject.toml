@@ -9,10 +9,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 # Keep this range to avoid 3.12/3.13 on the runner; CI will use 3.11
 python = ">=3.9"
-numpy = "^1.26.0"
-matplotlib = "^3.7.2"
-spikeinterface = "^0.99"
-probeinterface = "^0.2.17"
+numpy = ">1.26.0"
+matplotlib = ">3.7.2"
+spikeinterface = ">0.99"
+probeinterface = ">0.2.17"
 scipy = "^1.7.1"
 scikit-learn = "^1.0.1"
 kachery_cloud = { version = "0.4.8", optional = true }
