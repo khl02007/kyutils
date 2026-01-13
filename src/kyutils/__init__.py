@@ -22,7 +22,6 @@ from .spikesorting.waveform import (
     plot_waveforms_singleshank_new,
 )
 
-from .nwb.conversion import run_conversion
 from .nwb.utils import ptp_time_to_datetime, get_epoch_list
 
 from .decoding import get_spike_indicator, get_ahead_behind
