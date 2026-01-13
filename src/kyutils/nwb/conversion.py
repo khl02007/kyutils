@@ -61,7 +61,6 @@ import re
 from pathlib import Path
 from typing import List, Optional
 
-from trodes_to_nwb.convert import create_nwbs
 
 # ── Fixed settings (non-overridable by CLI) ──────────────────────────────────
 HEADER_RECONFIG_PATH = Path("/nimbus/kyu/L14/L14_reconfig.trodesconf")
@@ -124,6 +123,14 @@ def run_conversion(
     query_expression : str or None
         Optional query expression to filter sessions.
     """
+    try:
+        from trodes_to_nwb.convert import create_nwbs
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            "trodes_to_nwb is required for NWB conversion. "
+            "Install with: pip install 'kyutils[trodes]'"
+        ) from e
+
     session_path = base_path / date
 
     logging.info("Session path: %s", session_path)
@@ -422,6 +429,7 @@ def compare_binary_to_nwb(
     frames_to_compare : int, optional
         number of first N frames to load and compare, by default 3000
     """
+
     recording_dat = get_binary_recording(
         data_path, epoch_list, probe_types, stereotaxic_coordinates
     )
